@@ -74,6 +74,8 @@ Built-in: `replies: { type: 'http', post: URL, list: URL, headers: {}, credentia
 * POST `post` with JSON `{agentId, taskId, task, confirmId, question, text}`. Any 2xx counts as answered.
 * GET `list` returns `{items: [{confirmId, status: 'answered'|'seen'|'handled'|'new', text?}]}`. The server list is authoritative. Unsent answers are kept in `localStorage['gvo.replies']` and retried on the next refresh.
 
+Built-in for demos and offline tries: `replies: { type: 'memory' }`. Answers stay in the open page only (nothing is sent or stored) and are lost on reload. `?demo=1` uses it.
+
 `confirm.id` comes from your data, or defaults to `<taskId>-c<index>`, so keep confirm ids stable.
 
 ## Adapters

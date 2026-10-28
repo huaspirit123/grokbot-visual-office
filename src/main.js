@@ -1,12 +1,13 @@
 /* Grokbot Visual Office boot: config -> layout -> data -> engine. Config sources (later wins):
  *   window.VISUAL_OFFICE_CONFIG = { data, adapter, refreshSec, lang, title, layout, theme, links:[{href,label}],
  *                                   replies (reply provider, see src/replies.js), onConfirm(agent, task, confirm) }
- *   URL query: ?data=URL&adapter=workbench|auto|none&lang=zh|en&refresh=60 */
+ *   URL query: ?data=URL&adapter=workbench|auto|none&lang=zh|en&refresh=60&demo=1 (scripted tour on the sample data, src/demo.js) */
 (function (PO) {
   var q = new URLSearchParams(location.search), base = window.VISUAL_OFFICE_CONFIG || {};
   var cfg = Object.assign({ refreshSec: 60, adapter: 'auto', theme: 'default', layout: 'layouts/default.json' }, base);
   if (q.get('data')) cfg.data = q.get('data');
   if (q.get('adapter')) cfg.adapter = q.get('adapter') === 'none' ? null : q.get('adapter');
+  if (q.get('demo') && PO.demo) { cfg.demo = true; cfg.data = null; cfg.refreshSec = 3600; cfg.replies = { type: 'memory' }; }
   if (q.get('refresh')) cfg.refreshSec = Math.max(10, +q.get('refresh') || 60);
   var saved = null; try { saved = localStorage.getItem('gvo.lang'); } catch (e) {}
   PO.i18n.set(q.get('lang') || saved || cfg.lang || 'zh');
@@ -16,7 +17,7 @@
     if (!layout) layout = await PO.data.getJSON(cfg.layout);
     var theme = PO.themes[cfg.theme] || PO.themes['default'];
     Object.keys(theme.css || {}).forEach(function (k) { document.documentElement.style.setProperty(k, theme.css[k]); });
-    var R = cfg.replies && cfg.replies.type === 'http' ? PO.replies.http(cfg.replies) : cfg.replies || null;
+    var R = cfg.replies && (cfg.replies.type === 'http' || cfg.replies.type === 'memory') ? PO.replies[cfg.replies.type](cfg.replies) : cfg.replies || null;
     var app = PO.app = { cfg: cfg, theme: theme, data: null, src: null, meeting: null, replies: R };
     var busy = function () { try { return !!(R && R.busy && R.busy()); } catch (e) { return false; } };
     /* answers changed (sent / synced): recount, re-pose the characters, redraw the panel unless the user is typing */
@@ -40,7 +41,8 @@
       app.engine.setData(r.data, app.meeting);
       PO.ui.renderTop(r.data, app.meeting, r);
       if (PO.ui.state.sel && !busy()) PO.ui.renderPanel(); else if (PO.ui.state.sel) app.dirty = true;
-      PO.data.fireworks(r.data, now).slice(0, 4).forEach(function (f, i) {
+      var fw = PO.data.fireworks(r.data, now); if (cfg.demo) fw = [];   // the demo fires its own, on cue
+      fw.slice(0, 4).forEach(function (f, i) {
         setTimeout(function () { app.engine.celebrate(f.agent.id); PO.ui.toast(PO.i18n.t('firework', { a: f.agent.name, t: f.task.title || '' })); }, 900 + i * 1800);
       });
       if (r.error && manual) PO.ui.toast(PO.i18n.t('loadFail', { s: PO.i18n.t(r.source === 'sample' ? 'sample' : r.source === 'snapshot' ? 'snapshot' : 'live') }));
@@ -58,6 +60,7 @@
     B('b-lang', function () { PO.i18n.set(PO.i18n.lang === 'zh' ? 'en' : 'zh'); PO.ui.renderStatic(); PO.ui.renderTop(app.data, app.meeting, app.src); PO.ui.renderPanel(); });
     setTimeout(function () { document.getElementById('hint').classList.add('off'); }, 7000);
     window.__visualOfficeReady = true;
+    if (cfg.demo) PO.demo.run(app, { loop: q.get('demo') === 'loop' });
   }
   boot().catch(function (e) { console.error(e); document.getElementById('hint').textContent = 'Error: ' + e.message; });
 })(window.VisualOffice = window.VisualOffice || {});

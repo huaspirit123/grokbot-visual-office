@@ -8,10 +8,25 @@
  *   onChange(fn)                 -> call fn() whenever answers change                              [optional]
  * Built-in HTTP provider:  cfg.replies = { type:'http', post:'/api/answers', list:'/api/answers', headers:{} }
  *   POST post  JSON {agentId, taskId, task, confirmId, question, text}  -> any 2xx
- *   GET  list  -> {items:[{confirmId, status:'answered'|'seen'|'handled', text?}]}   (server is authoritative) */
+ *   GET  list  -> {items:[{confirmId, status:'answered'|'seen'|'handled', text?}]}   (server is authoritative)
+ * In-memory provider (demos, offline tries; nothing is sent anywhere):  cfg.replies = { type:'memory' } */
 (function (PO) {
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   PO.replies = {
+    memory: function () {
+      var got = {}, subs = [], emit = function () { subs.forEach(function (f) { try { f(); } catch (e) {} }); };
+      document.addEventListener('click', function (ev) {
+        var b = ev.target.closest && ev.target.closest('[data-rsend]'); if (!b) return; ev.preventDefault();
+        var el = b.closest('.rbox'), ta = el.querySelector('textarea'), cid = el.dataset.cid;
+        got[cid] = { state: 'sending', text: (ta.value || '').trim() || PO.i18n.t('agree') }; b.disabled = true; emit();
+        setTimeout(function () { got[cid].state = 'answered'; emit(); }, 500);
+      });
+      return { onChange: function (f) { subs.push(f); }, answers: got,
+        status: function (a, t, c) { return got[c.id] ? { state: got[c.id].state } : null; },
+        busy: function () { var e = document.activeElement; return !!(e && e.closest && e.closest('.rbox')); },
+        box: function (a, t, c) { var T = PO.i18n.t;
+          return '<div class="rbox" data-cid="' + esc(c.id) + '"><textarea rows="1" placeholder="' + esc(T('replyPh')) + '"></textarea><div class="rr"><button data-rsend>' + esc(T('send')) + '</button></div></div>'; } };
+    },
     http: function (o) {
       var srv = null, local = {}, subs = [], LK = 'gvo.replies';
       try { local = JSON.parse(localStorage.getItem(LK) || '{}'); } catch (e) {}

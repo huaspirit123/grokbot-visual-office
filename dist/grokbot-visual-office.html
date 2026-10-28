@@ -837,7 +837,7 @@ var c = this.chars[id]; if (!c) return; c.cheer = this.t + CFG.cheerMs;
 var p = this.iso.toWorld(c.x, c.y), cols = this.th.fireworkColors, self = this;
 [0, 450, 900].forEach(function (delay, k) { setTimeout(function () {
 var cx = p.x + (k - 1) * 14, cy = p.y - 52 - k * 6;
-for (var i = 0; i < 26; i++) { var a = i / 26 * Math.PI * 2, v = 34 + Math.random() * 26; self.particles.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1.3 + Math.random() * 0.5, age: 0, col: cols[(i + k) % cols.length] }); }
+for (var i = 0; i < 34; i++) { var a = i / 34 * Math.PI * 2, v = 40 + Math.random() * 30; self.particles.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1.3 + Math.random() * 0.5, age: 0, col: cols[(i + k) % cols.length] }); }
 }, delay); });
 };
 
@@ -892,7 +892,7 @@ if (c.fx === 'zzz') th.drawFx(b, 'zzz', c.wx, c.top, t);
 if (c.fx === 'talk' && Math.floor((t + hashN(c.id)) / 2200) % 2 === 0) th.drawFx(b, 'talk', c.wx + 6, c.top, t, { color: c.a.color });
 if (c.hand) th.drawFx(b, 'bang', c.wx + 1, c.top, t);
 });
-this.particles.forEach(function (p) { b.globalAlpha = Math.max(0, 1 - p.age / p.life); b.fillStyle = p.col; b.fillRect(Math.round(p.x), Math.round(p.y), 2, 2); });
+this.particles.forEach(function (p) { b.globalAlpha = Math.max(0, 1 - p.age / p.life); b.fillStyle = p.col; b.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, 3, 3); });
 b.globalAlpha = 1;
 th.drawForeground(b, t, { w: this.W, h: this.H });
 var x = this.ctx; x.setTransform(1, 0, 0, 1, 0, 0); x.imageSmoothingEnabled = false;
@@ -1007,6 +1007,20 @@ PO.Engine = Engine;
 (function (PO) {
 var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
 PO.replies = {
+memory: function () {
+var got = {}, subs = [], emit = function () { subs.forEach(function (f) { try { f(); } catch (e) {} }); };
+document.addEventListener('click', function (ev) {
+var b = ev.target.closest && ev.target.closest('[data-rsend]'); if (!b) return; ev.preventDefault();
+var el = b.closest('.rbox'), ta = el.querySelector('textarea'), cid = el.dataset.cid;
+got[cid] = { state: 'sending', text: (ta.value || '').trim() || PO.i18n.t('agree') }; b.disabled = true; emit();
+setTimeout(function () { got[cid].state = 'answered'; emit(); }, 500);
+});
+return { onChange: function (f) { subs.push(f); }, answers: got,
+status: function (a, t, c) { return got[c.id] ? { state: got[c.id].state } : null; },
+busy: function () { var e = document.activeElement; return !!(e && e.closest && e.closest('.rbox')); },
+box: function (a, t, c) { var T = PO.i18n.t;
+return '<div class="rbox" data-cid="' + esc(c.id) + '"><textarea rows="1" placeholder="' + esc(T('replyPh')) + '"></textarea><div class="rr"><button data-rsend>' + esc(T('send')) + '</button></div></div>'; } };
+},
 http: function (o) {
 var srv = null, local = {}, subs = [], LK = 'gvo.replies';
 try { local = JSON.parse(localStorage.getItem(LK) || '{}'); } catch (e) {}
@@ -1141,10 +1155,62 @@ document.addEventListener('keydown', function (e) { if (e.key === 'Escape') UI.c
 })(window.VisualOffice = window.VisualOffice || {});</script>
 <script>
 (function (PO) {
+PO.demo = {
+run: function (app, opt) {
+opt = opt || {};
+var zh = PO.i18n.lang === 'zh', hint = document.getElementById('hint'); if (hint) hint.classList.add('off');
+var st = document.createElement('style');
+st.textContent = '#demo-cur{position:fixed;z-index:20;left:0;top:0;width:26px;height:26px;pointer-events:none;transform:translate(-200px,-200px);filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}' +
+'#demo-cur svg{width:26px;height:26px}.demo-rip{position:fixed;z-index:19;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:3px solid #ffb340;pointer-events:none;animation:demoRip .6s ease-out forwards}' +
+'@keyframes demoRip{to{transform:scale(4);opacity:0}}';
+document.head.appendChild(st);
+var cur = document.createElement('div'); cur.id = 'demo-cur';
+cur.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 2l17 9-7.5 1.6L9 20z" fill="#fff" stroke="#25324a" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+document.body.appendChild(cur);
+var pos = { x: innerWidth + 40, y: innerHeight * 0.8 };
+var put = function () { cur.style.transform = 'translate(' + pos.x + 'px,' + pos.y + 'px)'; };
+var at = function (ms, f) { setTimeout(f, ms); };
+var ease = function (k) { return k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; };
+function move(to, dur, done) {
+var from = { x: pos.x, y: pos.y }, t0 = performance.now();
+(function step() { var k = Math.min(1, (performance.now() - t0) / dur), e = ease(k);
+pos.x = from.x + (to().x - from.x) * e; pos.y = from.y + (to().y - from.y) * e; put();
+if (k < 1) requestAnimationFrame(step); else if (done) done(); })();
+}
+function ripple() { var r = document.createElement('div'); r.className = 'demo-rip'; r.style.left = pos.x + 'px'; r.style.top = pos.y + 'px'; document.body.appendChild(r); setTimeout(function () { r.remove(); }, 700); }
+var agent = function (id) { return app.data.agents.find(function (a) { return a.id === id; }); };
+var charPt = function (id) { return function () { var p = app.engine.charScreen(id) || { x: innerWidth / 2, y: innerHeight / 2 }; return { x: p.x, y: p.y + 14 }; }; };
+var elPt = function (sel, fx, fy) { return function () { var e = document.querySelector(sel); if (!e) return pos; var r = e.getBoundingClientRect(); return { x: r.left + r.width * (fx || 0.5), y: r.top + r.height * (fy || 0.5) }; }; };
+var iso = function () { return new Date().toISOString(); };
+
+at(8000, function () { var a = agent('kite'), t = a && a.tasks.find(function (x) { return x.id === 'k2'; }); if (!t) return;
+t.status = 'done'; t.doneAt = t.updatedAt = iso(); a.lastActive = iso(); app.reapply();
+app.engine.celebrate('kite'); setTimeout(function () { app.engine.celebrate('kite'); }, 1400); PO.ui.toast(PO.i18n.t('firework', { a: a.name, t: t.title })); });
+
+at(12000, function () { move(charPt('mochi'), 1300, function () { ripple();
+app.engine.select({ type: 'agent', id: 'mochi' }); PO.ui.open({ type: 'agent', id: 'mochi' }); }); });
+
+at(15000, function () { move(elPt('#p-body .rbox textarea', 0.3, 0.5), 900, function () { ripple();
+var ta = document.querySelector('#p-body .rbox textarea'); if (!ta) return; var s = Array.from(zh ? '可以，全额退款' : 'Yes, refund in full'), i = 0;
+(function typ() { if (i < s.length) { ta.value += s[i++]; setTimeout(typ, zh ? 140 : 65); } })(); }); });
+at(17700, function () { move(elPt('#p-body .rbox [data-rsend]'), 700, function () { ripple();
+var b = document.querySelector('#p-body .rbox [data-rsend]'); if (b) b.click(); }); });
+
+at(21000, function () { move(elPt('#p-head .x'), 600, function () { ripple(); PO.ui.close(); }); });
+at(22000, function () { var a = agent('echo'); if (!a) return; a.status = a.baseStatus = 'working';
+a.tasks.forEach(function (t) { if (t.status === 'stuck') { t.status = 'running'; t.note = null; t.updatedAt = iso(); (t.subtasks || []).forEach(function (s) { if (s.status === 'stuck') s.status = 'running'; }); } });
+a.lastActive = iso(); app.reapply(); move(function () { return { x: innerWidth + 60, y: innerHeight * 0.85 }; }, 900); });
+at(25000, function () { window.__demoDone = true; if (opt.loop) location.reload(); });
+}
+};
+})(window.VisualOffice = window.VisualOffice || {});</script>
+<script>
+(function (PO) {
 var q = new URLSearchParams(location.search), base = window.VISUAL_OFFICE_CONFIG || {};
 var cfg = Object.assign({ refreshSec: 60, adapter: 'auto', theme: 'default', layout: 'layouts/default.json' }, base);
 if (q.get('data')) cfg.data = q.get('data');
 if (q.get('adapter')) cfg.adapter = q.get('adapter') === 'none' ? null : q.get('adapter');
+if (q.get('demo') && PO.demo) { cfg.demo = true; cfg.data = null; cfg.refreshSec = 3600; cfg.replies = { type: 'memory' }; }
 if (q.get('refresh')) cfg.refreshSec = Math.max(10, +q.get('refresh') || 60);
 var saved = null; try { saved = localStorage.getItem('gvo.lang'); } catch (e) {}
 PO.i18n.set(q.get('lang') || saved || cfg.lang || 'zh');
@@ -1153,7 +1219,7 @@ var layout = PO.data.readInline('po-layout');
 if (!layout) layout = await PO.data.getJSON(cfg.layout);
 var theme = PO.themes[cfg.theme] || PO.themes['default'];
 Object.keys(theme.css || {}).forEach(function (k) { document.documentElement.style.setProperty(k, theme.css[k]); });
-var R = cfg.replies && cfg.replies.type === 'http' ? PO.replies.http(cfg.replies) : cfg.replies || null;
+var R = cfg.replies && (cfg.replies.type === 'http' || cfg.replies.type === 'memory') ? PO.replies[cfg.replies.type](cfg.replies) : cfg.replies || null;
 var app = PO.app = { cfg: cfg, theme: theme, data: null, src: null, meeting: null, replies: R };
 var busy = function () { try { return !!(R && R.busy && R.busy()); } catch (e) { return false; } };
 
@@ -1177,7 +1243,8 @@ app.meeting = PO.data.meeting(r.data, now);
 app.engine.setData(r.data, app.meeting);
 PO.ui.renderTop(r.data, app.meeting, r);
 if (PO.ui.state.sel && !busy()) PO.ui.renderPanel(); else if (PO.ui.state.sel) app.dirty = true;
-PO.data.fireworks(r.data, now).slice(0, 4).forEach(function (f, i) {
+var fw = PO.data.fireworks(r.data, now); if (cfg.demo) fw = [];   // the demo fires its own, on cue
+fw.slice(0, 4).forEach(function (f, i) {
 setTimeout(function () { app.engine.celebrate(f.agent.id); PO.ui.toast(PO.i18n.t('firework', { a: f.agent.name, t: f.task.title || '' })); }, 900 + i * 1800);
 });
 if (r.error && manual) PO.ui.toast(PO.i18n.t('loadFail', { s: PO.i18n.t(r.source === 'sample' ? 'sample' : r.source === 'snapshot' ? 'snapshot' : 'live') }));
@@ -1195,6 +1262,7 @@ B('b-out', function () { var c = app.engine.cv; app.engine.zoomAt(-1, c.width / 
 B('b-lang', function () { PO.i18n.set(PO.i18n.lang === 'zh' ? 'en' : 'zh'); PO.ui.renderStatic(); PO.ui.renderTop(app.data, app.meeting, app.src); PO.ui.renderPanel(); });
 setTimeout(function () { document.getElementById('hint').classList.add('off'); }, 7000);
 window.__visualOfficeReady = true;
+if (cfg.demo) PO.demo.run(app, { loop: q.get('demo') === 'loop' });
 }
 boot().catch(function (e) { console.error(e); document.getElementById('hint').textContent = 'Error: ' + e.message; });
 })(window.VisualOffice = window.VisualOffice || {});</script>

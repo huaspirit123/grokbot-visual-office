@@ -126,7 +126,7 @@
     var p = this.iso.toWorld(c.x, c.y), cols = this.th.fireworkColors, self = this;
     [0, 450, 900].forEach(function (delay, k) { setTimeout(function () {
       var cx = p.x + (k - 1) * 14, cy = p.y - 52 - k * 6;
-      for (var i = 0; i < 26; i++) { var a = i / 26 * Math.PI * 2, v = 34 + Math.random() * 26; self.particles.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1.3 + Math.random() * 0.5, age: 0, col: cols[(i + k) % cols.length] }); }
+      for (var i = 0; i < 34; i++) { var a = i / 34 * Math.PI * 2, v = 40 + Math.random() * 30; self.particles.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1.3 + Math.random() * 0.5, age: 0, col: cols[(i + k) % cols.length] }); }
     }, delay); });
   };
 
@@ -183,7 +183,7 @@
       if (c.fx === 'talk' && Math.floor((t + hashN(c.id)) / 2200) % 2 === 0) th.drawFx(b, 'talk', c.wx + 6, c.top, t, { color: c.a.color });
       if (c.hand) th.drawFx(b, 'bang', c.wx + 1, c.top, t);
     });
-    this.particles.forEach(function (p) { b.globalAlpha = Math.max(0, 1 - p.age / p.life); b.fillStyle = p.col; b.fillRect(Math.round(p.x), Math.round(p.y), 2, 2); });
+    this.particles.forEach(function (p) { b.globalAlpha = Math.max(0, 1 - p.age / p.life); b.fillStyle = p.col; b.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, 3, 3); });
     b.globalAlpha = 1;
     th.drawForeground(b, t, { w: this.W, h: this.H });
     // blit
