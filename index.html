@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI 像素办公室 · Grokbot Visual Office</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header id="top">
+  <span id="links"></span><div class="brand"><span class="logo">◆</span><span id="title">AI 像素办公室</span></div>
+  <div id="counts"></div>
+  <div id="stamp"></div>
+  <nav>
+    <button id="b-team"></button><button id="b-refresh"></button>
+    <span class="zoom"><button id="b-out" aria-label="zoom out">−</button><button id="b-fit"></button><button id="b-in" aria-label="zoom in">+</button></span>
+    <button id="b-lang"></button>
+  </nav>
+</header>
+<main id="wrap"><canvas id="stage"></canvas><div id="hint"></div></main>
+<aside id="panel"><div id="p-head"></div><div id="p-tabs"></div><div id="p-body"></div></aside>
+<div id="toast"></div>
+<!-- optional: <script>window.VISUAL_OFFICE_CONFIG={data:'my-agents.json'}</script> -->
+<script src="src/i18n.js"></script>
+<script src="src/iso.js"></script>
+<script src="src/data.js"></script>
+<script src="adapters/workbench.js"></script>
+<script src="themes/default.js"></script>
+<script src="src/engine.js"></script>
+<script src="src/replies.js"></script>
+<script src="src/ui.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI 像素办公室 · Grokbot Visual Office</title>
+<link rel="icon" href="data:,">
+<style>*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg,#eaf6ff);color:var(--ink,#25324a);font:14px/1.45 system-ui,-apple-system,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif}#top{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:10px;padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid rgba(201,149,45,.35);flex-wrap:wrap}.brand{display:flex;align-items:center;gap:6px;font-weight:700;font-size:15px;white-space:nowrap}.logo{color:var(--gold,#c9952d)}#counts{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#f3f7fc;border:1px solid #dbe5f1;border-radius:999px;padding:2px 8px;font-size:12px;white-space:nowrap}.chip b{font-weight:700}.chip.c-waiting b{color:#e0303c}.chip.c-stuck b{color:#d9651f}#stamp{font-size:12px;color:#5b6a82;white-space:nowrap}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:#9aa6b8;vertical-align:0}.dot.live{background:#2fb36b;box-shadow:0 0 0 3px rgba(47,179,107,.18)}.dot.snapshot{background:#e2b24c}nav{margin-left:auto;display:flex;gap:6px;align-items:center}button{font:inherit;font-size:13px;border:1px solid #d6dfeb;background:#fff;color:inherit;border-radius:9px;padding:4px 10px;cursor:pointer}button:hover{border-color:var(--gold,#c9952d)}.zoom{display:inline-flex}.zoom button{border-radius:0;margin-left:-1px}.zoom button:first-child{border-radius:9px 0 0 9px}.zoom button:last-child{border-radius:0 9px 9px 0}#wrap{position:fixed;inset:0}#stage{width:100%;height:100%;display:block;touch-action:none;cursor:grab;image-rendering:pixelated}#hint{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(37,50,74,.78);color:#fff;font-size:12px;padding:5px 12px;border-radius:999px;transition:opacity .8s;pointer-events:none;white-space:nowrap}#hint.off{opacity:0}#panel{position:fixed;z-index:6;top:58px;right:10px;bottom:10px;width:min(400px,calc(100vw - 20px));background:var(--panel,#fff);border:1px solid rgba(201,149,45,.35);border-radius:16px;box-shadow:0 18px 50px rgba(40,70,120,.22);display:flex;flex-direction:column;transform:translateX(110%);transition:transform .25s ease;overflow:hidden}#panel.open{transform:none}#p-head{display:flex;gap:10px;align-items:center;padding:12px 12px 8px}.av{width:48px;height:64px;flex:none;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#e6f4ff,#fff);display:flex;align-items:center;justify-content:center;font-size:26px}.hd{flex:1;min-width:0}.nm{font-weight:700;font-size:16px}.sub{font-size:12px;color:#5b6a82;margin-top:2px}.x{border:none;font-size:16px;align-self:flex-start}.badge{font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;vertical-align:2px;background:#eef3f9;color:#4a5a73}.m-working{background:#e3f7ec;color:#1d8a4f}.m-meeting{background:#efe8ff;color:#6a45b8}.m-stuck{background:#fff0e5;color:#c4521c}.m-waiting_approval{background:#ffe9eb;color:#d32635}.m-offline{background:#eef1f5;color:#6b778c}.m-boss{background:#fff5dc;color:#9a6c12}.m-done{background:#fff8d6;color:#9a7a00}.m-idle{background:#e8f3ff;color:#2a6fb8}#p-tabs{display:flex;gap:4px;padding:0 12px;border-bottom:1px solid #e6ecf3}#p-tabs button{border:none;border-bottom:2px solid transparent;border-radius:0;padding:8px 10px;color:#5b6a82}#p-tabs button.on{border-color:var(--gold,#c9952d);color:inherit;font-weight:700}#p-tabs i{font-style:normal;font-size:11px;margin-left:4px;background:#eef3f9;border-radius:999px;padding:0 6px}#p-tabs i.red{background:#ff3b47;color:#fff}#p-body{overflow:auto;padding:10px 12px 16px;flex:1}.it{border:1px solid #e6ecf3;border-radius:12px;padding:9px 10px;margin-bottom:8px;background:#fff}.tn{font-weight:600}.meta{display:flex;flex-wrap:wrap;gap:4px 8px;font-size:12px;color:#5b6a82;margin-top:4px}.pill{border-radius:6px;padding:0 6px;background:#eef3f9}.s-running{background:#e3f7ec;color:#1d8a4f}.s-stuck{background:#fff0e5;color:#c4521c}.s-done{background:#eef1f5;color:#4a5a73}.s-queued{background:#f3f0ff;color:#6a45b8}.bar{height:5px;border-radius:9px;background:#edf2f8;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#7fe3ff,#3a8dde)}.nt{font-size:12px;color:#4a5a73;margin-top:5px;white-space:pre-wrap;word-break:break-word}.subs{font-size:12px;margin-top:5px}.subs summary{cursor:pointer;color:#3a6fb0}.agt{display:inline-block;font-size:11px;color:#fff;background:var(--c);border-radius:6px;padding:0 6px;margin-bottom:3px}.qq{margin-top:5px;background:#fff6f6;border-left:3px solid #ff3b47;padding:6px 8px;border-radius:6px;font-size:13px}.ans{margin-top:6px}.more{width:100%}#links{display:contents}#links a{font-size:13px;text-decoration:none;color:inherit;border:1px solid #d6dfeb;background:#fff;border-radius:9px;padding:3px 9px;white-space:nowrap}#links a:hover{border-color:var(--gold,#c9952d)}.rflag{display:inline-block;font-size:11px;border-radius:999px;padding:0 7px;margin-left:4px;border:1px solid #9fd8b8;color:#1d8a4f;background:#f0fbf4;white-space:nowrap}.rflag.r-sending,.rflag.r-failed{border-color:#f0c48a;color:#b4600f;background:#fff7ec}details.answered{margin-top:12px}details.answered>summary{cursor:pointer;color:#1d8a4f;font-weight:600;padding:4px 2px}details.answered .qq{background:#f3fbf6;border-left-color:#2fb36b}details.closedq>summary{color:#5b6a82}details.closedq .qq{background:#f5f7fa;border-left-color:#aab4c3}.rbox{display:grid;gap:5px;margin-top:6px}.rbox textarea{width:100%;min-height:34px;resize:vertical;font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid #d6dfeb}.rbox .rr{display:flex;gap:8px;align-items:center;font-size:12px;color:#5b6a82}.emp{color:#7a879b;text-align:center;padding:26px 0}#toast{position:fixed;left:50%;top:70px;transform:translate(-50%,-20px);opacity:0;z-index:9;background:#fffaf0;border:1px solid #e2b24c;border-radius:999px;padding:7px 16px;box-shadow:0 8px 24px rgba(160,120,40,.2);transition:.3s;pointer-events:none;font-weight:600}#toast.on{opacity:1;transform:translate(-50%,0)}@media (max-width:720px){#top{gap:6px;padding:6px 8px}.brand{font-size:14px}.chip{padding:1px 6px;font-size:11px}.chip .cl{display:none}#stamp{font-size:11px;order:3;width:100%}nav{margin-left:0;order:2;width:100%}nav button{padding:3px 8px;font-size:12px}#b-lang{margin-left:auto}#panel{top:auto;left:0;right:0;bottom:0;width:100%;height:62vh;border-radius:18px 18px 0 0;transform:translateY(105%)}#panel.open{transform:none}}</style>
+</head>
+<body>
+<header id="top">
+  <span id="links"></span><div class="brand"><span class="logo">◆</span><span id="title">AI 像素办公室</span></div>
+  <div id="counts"></div>
+  <div id="stamp"></div>
+  <nav>
+    <button id="b-team"></button><button id="b-refresh"></button>
+    <span class="zoom"><button id="b-out" aria-label="zoom out">−</button><button id="b-fit"></button><button id="b-in" aria-label="zoom in">+</button></span>
+    <button id="b-lang"></button>
+  </nav>
+</header>
+<main id="wrap"><canvas id="stage"></canvas><div id="hint"></div></main>
+<aside id="panel"><div id="p-head"></div><div id="p-tabs"></div><div id="p-body"></div></aside>
+<div id="toast"></div>
+<script type="application/json" id="po-layout">{"name":"cloud-top-office","cols":22,"rows":18,"floor":["wwwwwwwwwwwwwmmmmmmmm.","wwwwwwwwwwwwwmmmmmmmm.","wwwwwwwwwwwwwmmmmmmmmw","wwwwwwwwwwwwwmmmmmmmmw","wwwwwwwwwwwwwmmmmmmmmw","wwwwwwwwwwwwwmmmmmmmmw","wwwwwwwwwwwwwmmmmmmmmw","wwwwwwwwwwwbwmmmmmmmmw","wwwwwwwwwwbbbwwwwwwwww","wwwwwwwwwbbbbbwwwwwwww","wwwwwwwwwwbbbwwwwwwwww","wwwwwwwwwwwbwwwwwwwwww","wssssssssssssssssssssw","wwwwwwwwwwwswwwrrrrrww","wwwwwwwwwwwswwwrrrrrww","wwwwwwwwwwwswwwrrrrrww",".wwwwwwwwwwswwwrrrrrw.","..wwwwwwwwwwwwwwwwww.."],"walls":{"back_x":true,"back_y":true,"windows_y0":[[2,8],[13,20]],"windows_x0":[[8,14]],"painting_x0":[3,5]},"objects":[{"type":"desk","x":2,"y":2},{"type":"chair","x":3,"y":2,"seat":true,"face":[-1,0]},{"type":"desk","x":2,"y":4},{"type":"chair","x":3,"y":4,"seat":true,"face":[-1,0]},{"type":"desk","x":2,"y":6},{"type":"chair","x":3,"y":6,"seat":true,"face":[-1,0]},{"type":"desk","x":2,"y":8},{"type":"chair","x":3,"y":8,"seat":true,"face":[-1,0]},{"type":"desk","x":2,"y":10},{"type":"chair","x":3,"y":10,"seat":true,"face":[-1,0]},{"type":"desk","x":6,"y":2},{"type":"chair","x":7,"y":2,"seat":true,"face":[-1,0]},{"type":"desk","x":6,"y":4},{"type":"chair","x":7,"y":4,"seat":true,"face":[-1,0]},{"type":"desk","x":6,"y":6},{"type":"chair","x":7,"y":6,"seat":true,"face":[-1,0]},{"type":"desk","x":6,"y":8},{"type":"chair","x":7,"y":8,"seat":true,"face":[-1,0]},{"type":"desk","x":6,"y":10},{"type":"chair","x":7,"y":10,"seat":true,"face":[-1,0]},{"type":"boss_desk","x":12,"y":8,"w":1,"h":3},{"type":"chair","x":11,"y":9,"seat":true,"face":[1,0]},{"type":"meeting_table","x":16,"y":3,"w":3,"h":2},{"type":"bookshelf","x":9,"y":0,"w":2,"h":1},{"type":"coffee_bar","x":20,"y":9,"w":1,"h":3},{"type":"stool","x":19,"y":9,"seat":true},{"type":"stool","x":19,"y":11,"seat":true},{"type":"arcade","x":20,"y":14},{"type":"armchair","x":16,"y":15,"seat":true},{"type":"armchair","x":18,"y":15,"seat":true},{"type":"side_table","x":17,"y":15},{"type":"pod","x":2,"y":15,"seat":true},{"type":"pod","x":4,"y":15,"seat":true},{"type":"pod","x":6,"y":15,"seat":true},{"type":"pod","x":8,"y":15,"seat":true},{"type":"plant","x":0,"y":0,"v":0},{"type":"plant","x":12,"y":0,"v":1},{"type":"plant","x":0,"y":11,"v":2},{"type":"plant","x":21,"y":7,"v":0},{"type":"plant","x":14,"y":13,"v":1},{"type":"plant","x":20,"y":1,"v":2},{"type":"plant","x":9,"y":16,"v":0},{"type":"plant","x":14,"y":16,"v":2},{"type":"chair","x":15,"y":3,"seat":true,"face":[1,0]},{"type":"chair","x":15,"y":4,"seat":true,"face":[1,0]},{"type":"chair","x":19,"y":3,"seat":true,"face":[-1,0]},{"type":"chair","x":19,"y":4,"seat":true,"face":[-1,0]},{"type":"chair","x":16,"y":2,"seat":true,"face":[0,1]},{"type":"chair","x":17,"y":2,"seat":true,"face":[0,1]},{"type":"chair","x":18,"y":2,"seat":true,"face":[0,1]},{"type":"chair","x":16,"y":5,"seat":true,"face":[0,-1]},{"type":"chair","x":17,"y":5,"seat":true,"face":[0,-1]},{"type":"chair","x":18,"y":5,"seat":true,"face":[0,-1]},{"type":"glass","x":13,"y":0,"axis":"y"},{"type":"glass","x":13,"y":1,"axis":"y"},{"type":"glass","x":13,"y":2,"axis":"y"},{"type":"glass","x":13,"y":3,"axis":"y"},{"type":"glass","x":13,"y":5,"axis":"y"},{"type":"glass","x":13,"y":6,"axis":"y"},{"type":"glass","x":14,"y":7,"axis":"x"},{"type":"glass","x":15,"y":7,"axis":"x"},{"type":"glass","x":16,"y":7,"axis":"x"},{"type":"glass","x":18,"y":7,"axis":"x"},{"type":"glass","x":19,"y":7,"axis":"x"},{"type":"glass","x":20,"y":7,"axis":"x"}],"zones":{"desks":[{"id":1,"desk":[2,2],"seat":[3,2],"face":[-1,0]},{"id":2,"desk":[2,4],"seat":[3,4],"face":[-1,0]},{"id":3,"desk":[2,6],"seat":[3,6],"face":[-1,0]},{"id":4,"desk":[2,8],"seat":[3,8],"face":[-1,0]},{"id":5,"desk":[2,10],"seat":[3,10],"face":[-1,0]},{"id":6,"desk":[6,2],"seat":[7,2],"face":[-1,0]},{"id":7,"desk":[6,4],"seat":[7,4],"face":[-1,0]},{"id":8,"desk":[6,6],"seat":[7,6],"face":[-1,0]},{"id":9,"desk":[6,8],"seat":[7,8],"face":[-1,0]},{"id":10,"desk":[6,10],"seat":[7,10],"face":[-1,0]}],"boss":{"seat":[11,9],"face":[1,0],"tiles":[[11,7],[10,8],[11,8],[12,8],[9,9],[10,9],[11,9],[12,9],[13,9],[10,10],[11,10],[12,10],[11,11]]},"meeting":{"seats":[[15,3,1,0],[15,4,1,0],[19,3,-1,0],[19,4,-1,0],[16,2,0,1],[17,2,0,1],[18,2,0,1],[16,5,0,-1],[17,5,0,-1],[18,5,0,-1]],"table":[17,3.5]},"pods":[[2,15],[4,15],[6,15],[8,15]],"approval_queue":[[13,8],[13,9],[14,8],[14,9],[13,11],[14,11]],"idle_spots":[{"at":[20,12],"kind":"coffee","face":[0,-1]},{"at":[19,9],"kind":"stool","face":[1,0]},{"at":[19,11],"kind":"stool","face":[1,0]},{"at":[20,15],"kind":"arcade","face":[0,-1]},{"at":[16,15],"kind":"sofa","face":[1,0]},{"at":[18,15],"kind":"sofa","face":[-1,0]},{"at":[9,1],"kind":"books","face":[0,-1]},{"at":[10,1],"kind":"books","face":[0,-1]},{"at":[4,13],"kind":"window","face":[0,1]},{"at":[16,10],"kind":"window","face":[1,0]}]}}</script>
+<script type="application/json" id="po-sample">{"schemaVersion":1,"office":{"name":"Demo Sky Office","updatedAt":"2026-01-15T15:00:00+08:00","demo":true},"projects":[{"id":"launch","name":"Spring launch"},{"id":"ops","name":"Operations"},{"id":"research","name":"Research"},{"id":"support","name":"Customer support"},{"id":"content","name":"Content"},{"id":"docs","name":"Docs"}],"agents":[{"id":"nova","name":"Nova","role":"Lead agent","color":"#4f9dff","kind":"ai","isBoss":true,"status":"working","currentTask":"Plan this week's launch","project":"ops","lastActive":"2026-01-15T14:55:00+08:00","tasks":[{"id":"n1","title":"Plan this week's launch","status":"running","project":"launch","startedAt":"2026-01-15T13:30:00+08:00","updatedAt":"2026-01-15T14:55:00+08:00","doneAt":null,"progress":0.6,"note":null,"subtasks":[{"title":"Collect team updates","status":"done"},{"title":"Draft timeline","status":"done"},{"title":"Review risks","status":"running"}],"confirms":[]},{"id":"n0","title":"Morning stand-up summary","status":"done","project":"ops","startedAt":"2026-01-15T10:00:00+08:00","updatedAt":"2026-01-15T11:00:00+08:00","doneAt":"2026-01-15T11:00:00+08:00","progress":null,"note":null,"subtasks":[],"confirms":[]}]},{"id":"pixel","name":"Pixel","role":"Designer","color":"#ff6aa2","kind":"ai","isBoss":false,"status":"working","currentTask":"Landing page hero illustration","project":"launch","lastActive":"2026-01-15T14:52:00+08:00","tasks":[{"id":"p1","title":"Landing page hero illustration","status":"running","project":"launch","startedAt":"2026-01-15T13:00:00+08:00","updatedAt":"2026-01-15T14:52:00+08:00","doneAt":null,"progress":0.5,"note":null,"subtasks":[{"title":"Sketch","status":"done"},{"title":"Colour pass","status":"running"},{"title":"Export","status":"queued"}],"confirms":[]}]},{"id":"byte","name":"Byte","role":"Engineer","color":"#34c4b8","kind":"ai","isBoss":false,"status":"working","currentTask":"Checkout page bug fixes","project":"launch","lastActive":"2026-01-15T14:48:00+08:00","tasks":[{"id":"b1","title":"Checkout page bug fixes","status":"running","project":"launch","startedAt":"2026-01-15T13:20:00+08:00","updatedAt":"2026-01-15T14:48:00+08:00","doneAt":null,"progress":0.3,"note":null,"subtasks":[{"title":"Reproduce","status":"done"},{"title":"Fix","status":"running"},{"title":"Tests","status":"queued"},{"title":"Deploy","status":"queued"}],"confirms":[]},{"id":"b0","title":"Upgrade dependencies","status":"done","project":"ops","startedAt":"2026-01-15T05:00:00+08:00","updatedAt":"2026-01-15T06:40:00+08:00","doneAt":"2026-01-15T06:40:00+08:00","progress":null,"note":null,"subtasks":[],"confirms":[{"id":"b0-c0","question":"Keep the old version as a fallback?","status":"pending"}]}]},{"id":"echo","name":"Echo","role":"Researcher","color":"#ffb340","kind":"ai","isBoss":false,"status":"stuck","currentTask":"Competitor price survey","project":"research","lastActive":"2026-01-15T14:20:00+08:00","tasks":[{"id":"e1","title":"Competitor price survey","status":"stuck","project":"research","startedAt":"2026-01-15T11:40:00+08:00","updatedAt":"2026-01-15T14:20:00+08:00","doneAt":null,"progress":0.4,"note":"A pricing page needs a login","subtasks":[{"title":"List competitors","status":"done"},{"title":"Read pricing pages","status":"stuck"},{"title":"Summary table","status":"queued"}],"confirms":[]}]},{"id":"mochi","name":"Mochi","role":"Support","color":"#c08bff","kind":"ai","isBoss":false,"status":"waiting_approval","currentTask":"Reply to customer refund emails","project":"support","lastActive":"2026-01-15T10:00:00+08:00","tasks":[{"id":"m1","title":"Reply to customer refund emails","status":"running","project":"support","startedAt":"2026-01-15T06:40:00+08:00","updatedAt":"2026-01-15T10:00:00+08:00","doneAt":null,"progress":0.8,"note":null,"subtasks":[],"confirms":[{"id":"m1-c0","question":"OK to refund order #1042 in full?","status":"pending"},{"id":"m1-c1","question":"Send the apology template to 3 customers?","status":"pending"}]}]},{"id":"kite","name":"Kite","role":"Writer","color":"#8fd14f","kind":"ai","isBoss":false,"status":"idle","currentTask":null,"project":null,"lastActive":"2026-01-15T11:40:00+08:00","tasks":[{"id":"k1","title":"Blog post: 5 tips for remote teams","status":"done","project":"content","startedAt":"2026-01-15T00:00:00+08:00","updatedAt":"2026-01-15T03:20:00+08:00","doneAt":"2026-01-15T03:20:00+08:00","progress":null,"note":null,"subtasks":[],"confirms":[]},{"id":"k2","title":"Newsletter draft","status":"queued","project":"content","startedAt":"2026-01-15T14:00:00+08:00","updatedAt":"2026-01-15T14:00:00+08:00","doneAt":null,"progress":null,"note":null,"subtasks":[],"confirms":[]}]},{"id":"atlas","name":"Atlas","role":"Ops","color":"#7a8cff","kind":"ai","isBoss":false,"status":"offline","currentTask":null,"project":null,"lastActive":"2026-01-12T22:00:00+08:00","tasks":[{"id":"a1","title":"Nightly backup check","status":"done","project":"ops","startedAt":"2026-01-12T20:20:00+08:00","updatedAt":"2026-01-12T22:00:00+08:00","doneAt":"2026-01-12T22:00:00+08:00","progress":null,"note":null,"subtasks":[],"confirms":[]}]},{"id":"lin","name":"Lin","role":"Product manager (human)","color":"#ff7a59","kind":"human","isBoss":false,"status":"working","currentTask":"User interview notes","project":"docs","lastActive":"2026-01-15T14:50:00+08:00","tasks":[{"id":"l1","title":"User interview notes","status":"running","project":"docs","startedAt":"2026-01-15T14:10:00+08:00","updatedAt":"2026-01-15T14:50:00+08:00","doneAt":null,"progress":0.5,"note":null,"subtasks":[{"title":"Interview 1","status":"done"},{"title":"Interview 2","status":"running"}],"confirms":[]}]},{"id":"juno","name":"Juno","role":"QA","color":"#2ec4f1","kind":"ai","isBoss":false,"status":"done","currentTask":null,"project":null,"lastActive":"2026-01-15T14:56:00+08:00","tasks":[{"id":"j1","title":"Regression test run","status":"done","project":"launch","startedAt":"2026-01-15T13:40:00+08:00","updatedAt":"2026-01-15T14:56:00+08:00","doneAt":"2026-01-15T14:56:00+08:00","progress":1,"note":null,"subtasks":[],"confirms":[]}]},{"id":"sam","name":"Sam","role":"Designer (human)","color":"#f2c14e","kind":"human","isBoss":false,"status":"idle","currentTask":null,"project":null,"lastActive":"2026-01-15T13:00:00+08:00","tasks":[]}]}</script>
+<script>
+(function (PO) {
+var DICT = {
+zh: {
+title: 'AI 像素办公室', team: '全队', refresh: '刷新', fit: '适配', lang: 'EN',
+live: '实时数据', sample: '示例数据', snapshot: '内置快照', updated: '数据更新',
+now: '正在做', done: '已完成', confirm: '待你确认', nothingNow: '现在手上没有进行中的任务',
+nothingDone: '还没有完成记录', nothingConfirm: '没有需要你确认的事 👍', more: '再显示 {n} 条',
+st_working: '工作中', st_idle: '摸鱼中', st_stuck: '卡住了', st_waiting_approval: '待你确认',
+st_offline: '充电中（下线）', st_done: '刚完成', st_meeting: '开会中', st_boss: '统筹全队',
+ts_running: '进行中', ts_done: '已完成', ts_queued: '排队', ts_stuck: '卡住', ts_cancelled: '已取消',
+ts_pending: '待确认', ts_answered: '已答复',
+answered: '已答复 · 等助手处理', answeredN: '已答复 {n} 条', closedN: '已完成任务上的问题 {n}', rs_answered: '已答复', rs_seen: '助手已看到', rs_handled: '助手已处理', rs_sending: '答复待发送', rs_failed: '提交失败',
+answer: '答复', replyPh: '有意见或要求就写在这里；直接点提交 = 同意', send: '提交', sentOk: '已提交', agree: '同意（没有补充）',
+started: '开始', last: '最近', finished: '完成', subtasks: '子任务', lastActive: '最近动静',
+emptyDesk: '{n} 号工位 · 空位', emptyDeskTip: '这里还没人。在数据里多加一个助手或真人员工，就会坐到这里。',
+desk: '{n} 号工位', bossDesk: '中央指挥台', human: '真人', ai: 'AI 助手',
+meetingOn: '会议中 · {p}', firework: '🎉 {a} 完成了「{t}」', loadFail: '没连上数据源，显示的是{s}',
+agents: '{n} 位', teamSub: '进行中 {r} · 待你确认 {c}', progress: '进度',
+c_working: '工作', c_meeting: '开会', c_waiting: '待确认', c_stuck: '卡住', c_idle: '摸鱼', c_offline: '充电',
+hint: '拖动平移 · 滚轮/双指缩放 · 点人物或工位查看任务'
+},
+en: {
+title: 'Grokbot Visual Office', team: 'Team', refresh: 'Refresh', fit: 'Fit', lang: '中文',
+live: 'Live data', sample: 'Sample data', snapshot: 'Built-in snapshot', updated: 'Updated',
+now: 'Doing', done: 'Done', confirm: 'Needs you', nothingNow: 'Nothing in progress right now',
+nothingDone: 'Nothing finished yet', nothingConfirm: 'Nothing needs your answer 👍', more: 'Show {n} more',
+st_working: 'Working', st_idle: 'Idle', st_stuck: 'Stuck', st_waiting_approval: 'Needs you',
+st_offline: 'Charging (offline)', st_done: 'Just finished', st_meeting: 'In a meeting', st_boss: 'Leading the team',
+ts_running: 'Running', ts_done: 'Done', ts_queued: 'Queued', ts_stuck: 'Stuck', ts_cancelled: 'Cancelled',
+ts_pending: 'Pending', ts_answered: 'Answered',
+answered: 'Answered · waiting for the agent', answeredN: '{n} answered', closedN: 'Questions on finished tasks: {n}', rs_answered: 'Answered', rs_seen: 'Seen by agent', rs_handled: 'Handled', rs_sending: 'Not sent yet', rs_failed: 'Failed',
+answer: 'Answer', replyPh: 'Add a comment, or just press Send to approve', send: 'Send', sentOk: 'Sent', agree: 'Approved (no comment)',
+started: 'Started', last: 'Last', finished: 'Finished', subtasks: 'Subtasks', lastActive: 'Last active',
+emptyDesk: 'Desk {n} · free', emptyDeskTip: 'Nobody sits here yet. Add another agent or a human to your data and they will take this desk.',
+desk: 'Desk {n}', bossDesk: 'Command desk', human: 'Human', ai: 'AI agent',
+meetingOn: 'Meeting · {p}', firework: '🎉 {a} finished “{t}”', loadFail: 'Could not reach the data source, showing {s}',
+agents: '{n} members', teamSub: '{r} running · {c} need you', progress: 'Progress',
+c_working: 'Working', c_meeting: 'Meeting', c_waiting: 'Needs you', c_stuck: 'Stuck', c_idle: 'Idle', c_offline: 'Charging',
+hint: 'Drag to pan · wheel/pinch to zoom · tap a character or desk'
+}
+};
+var lang = 'zh';
+PO.i18n = {
+DICT: DICT,
+set: function (l) { if (DICT[l]) { lang = l; try { localStorage.setItem('gvo.lang', l); } catch (e) {} } },
+get lang() { return lang; },
+t: function (k, v) { var s = (DICT[lang] && DICT[lang][k]) || DICT.zh[k] || k; if (v) for (var n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
+};
+})(window.VisualOffice = window.VisualOffice || {});</script>
+<script>
+(function (PO) {
+function Iso(tw, th, ox, oy) { this.tw = tw; this.th = th; this.hw = tw / 2; this.hh = th / 2; this.ox = ox; this.oy = oy; }
+
+Iso.prototype.toWorld = function (x, y) { return { x: this.ox + (x - y) * this.hw, y: this.oy + (x + y) * this.hh }; };
+
+Iso.prototype.toTile = function (wx, wy) {
+var a = (wx - this.ox) / this.hw, b = (wy - this.oy) / this.hh;
+return { x: (a + b) / 2, y: (b - a) / 2 };
+};
+PO.Iso = Iso;
+
+PO.findPath = function (cols, rows, walk, sx, sy, tx, ty) {
+if (sx === tx && sy === ty) return [];
+var N = cols * rows, g = new Float32Array(N).fill(Infinity), from = new Int32Array(N).fill(-1), closed = new Uint8Array(N);
+var open = [], idx = function (x, y) { return y * cols + x; };
+var h = function (x, y) { var dx = Math.abs(x - tx), dy = Math.abs(y - ty); return Math.max(dx, dy) + 0.414 * Math.min(dx, dy); };
+var s = idx(sx, sy); g[s] = 0; open.push([h(sx, sy), s]);
+var D = [[1, 0, 1], [-1, 0, 1], [0, 1, 1], [0, -1, 1], [1, 1, 1.414], [1, -1, 1.414], [-1, 1, 1.414], [-1, -1, 1.414]];
+while (open.length) {
+var bi = 0; for (var i = 1; i < open.length; i++) if (open[i][0] < open[bi][0]) bi = i;
+var cur = open[bi][1]; open[bi] = open[open.length - 1]; open.pop();
+if (closed[cur]) continue; closed[cur] = 1;
+var cx = cur % cols, cy = (cur / cols) | 0;
+if (cx === tx && cy === ty) {
+var p = [], c = cur; while (c !== s) { p.push([c % cols, (c / cols) | 0]); c = from[c]; } return p.reverse();
+}
+for (var k = 0; k < 8; k++) {
+var nx = cx + D[k][0], ny = cy + D[k][1];
+if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
+var isGoal = nx === tx && ny === ty;
+if (!isGoal && !walk(nx, ny)) continue;
+if (D[k][2] > 1 && (!walk(cx + D[k][0], cy) || !walk(cx, cy + D[k][1]))) continue;
+var n = idx(nx, ny), ng = g[cur] + D[k][2];
+if (ng < g[n]) { g[n] = ng; from[n] = cur; open.push([ng + h(nx, ny), n]); }
+}
+}
+return null;
+};
+})(window.VisualOffice = window.VisualOffice || {});</script>
+<script>
+(function (PO) {
+var RULES = { meetingHours: 3, fireworkMinutes: 30 };
+PO.RULES = RULES;
+var STATUSES = ['working', 'idle', 'stuck', 'waiting_approval', 'offline', 'done'];
+
+var CLOSED = { done: 1, cancelled: 1, archived: 1 };
+function isClosed(t) { return !!(CLOSED[t.status] || t.archived); }
+function readInline(id) { var e = document.getElementById(id); if (!e) return null; try { return JSON.parse(e.textContent); } catch (x) { return null; } }
+async function getJSON(url) {
+var ac = new AbortController(), tm = setTimeout(function () { ac.abort(); }, 10000);
+try {
+var u = url + (url.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now();
+var r = await fetch(u, { cache: 'no-store', credentials: 'same-origin', signal: ac.signal });
+if (!r.ok) throw new Error('HTTP ' + r.status);
+return await r.json();
+} finally { clearTimeout(tm); }
+}
+
+function shiftDemo(d) {
+if (!d.office || !d.office.demo || !d.office.updatedAt) return d;
+var delta = Date.now() - Date.parse(d.office.updatedAt);
+var sh = function (v) { return v ? new Date(Date.parse(v) + delta).toISOString() : v; };
+d.office.updatedAt = sh(d.office.updatedAt);
+d.agents.forEach(function (a) { a.lastActive = sh(a.lastActive); (a.tasks || []).forEach(function (t) { t.startedAt = sh(t.startedAt); t.updatedAt = sh(t.updatedAt); t.doneAt = sh(t.doneAt); }); });
+return d;
+}
+function normalise(d) {
+d = d || {}; d.office = d.office || { name: 'AI Office' }; d.agents = (d.agents || []).filter(function (a) { return a && a.id != null; });
+d.agents.forEach(function (a, i) {
+a.id = String(a.id); a.name = a.name || a.id; a.kind = a.kind === 'human' ? 'human' : 'ai';
+if (STATUSES.indexOf(a.status) < 0) a.status = 'idle';
+a.baseStatus = a.baseStatus || a.status;
+a.tasks = (a.tasks || []).map(function (t, j) {
+t.id = t.id != null ? String(t.id) : a.id + '-' + j; t.title = t.title || '';
+t.subtasks = t.subtasks || []; t.confirms = (t.confirms || []).map(function (c, k) { c = typeof c === 'string' ? { id: t.id + '-c' + k, question: c, status: 'pending' } : c;
+if (c.id == null) c.id = t.id + '-c' + k; c.baseStatus = c.baseStatus || c.status || 'pending'; c.closed = isClosed(t); return c; });
+return t;
+});
+a.pending = 0; a.tasks.forEach(function (t) { t.confirms.forEach(function (c) { if ((c.status || 'pending') === 'pending' && !c.closed) a.pending++; }); });
+if (a.status === 'waiting_approval' && !a.pending) a.status = a.baseStatus = 'idle';
+});
+return d;
+}
+
+function meeting(d, now) {
+var by = {};
+d.agents.forEach(function (a) {
+if (a.isBoss || a.status !== 'working' || !a.project) return;
+if (a.lastActive && now - Date.parse(a.lastActive) > RULES.meetingHours * 36e5) return;
+(by[a.project] = by[a.project] || []).push(a.id);
+});
+var best = null; Object.keys(by).forEach(function (p) { if (by[p].length >= 2 && (!best || by[p].length > best.ids.length)) best = { project: p, ids: by[p] }; });
+if (best) { var pr = (d.projects || []).find(function (p) { return p.id === best.project; }); best.name = pr ? pr.name : best.project; }
+return best;
+}
+
+var SEEN_KEY = 'gvo.fw', seen = {}, prev = null;
+try { seen = JSON.parse(localStorage.getItem(SEEN_KEY) || '{}'); } catch (e) {}
+function fireworks(d, now) {
+var out = [];
+d.agents.forEach(function (a) {
+var doneTasks = a.tasks.filter(function (t) { return t.status === 'done'; });
+doneTasks.forEach(function (t) {
+var k = a.id + '|' + t.id; if (seen[k]) return;
+var e = t.doneAt ? Date.parse(t.doneAt) : 0;
+var fresh = e && now - e <= RULES.fireworkMinutes * 6e4 && now - e >= -6e4;
+var flipped = prev && prev[k] && prev[k] !== 'done';
+if (fresh || flipped) { seen[k] = now; out.push({ agent: a, task: t }); }
+});
+if (a.status === 'done' && !out.some(function (o) { return o.agent === a; })) {
+var k2 = a.id + '|status-done|' + (a.lastActive || ''); if (!seen[k2]) { seen[k2] = now; out.push({ agent: a, task: doneTasks[0] || { title: '' } }); }
+}
+});
+Object.keys(seen).forEach(function (k) { if (now - seen[k] > 7 * 864e5) delete seen[k]; });
+try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) {}
+prev = {}; d.agents.forEach(function (a) { a.tasks.forEach(function (t) { prev[a.id + '|' + t.id] = t.status; }); });
+return out;
+}
+
+var ANSWERED = { answered: 1, seen: 1, handled: 1 };
+function applyReplies(d, R) {
+d.agents.forEach(function (a) {
+a.pending = 0;
+a.tasks.forEach(function (t) { t.confirms.forEach(function (c) {
+var r = null; if (R && R.status && c.baseStatus === 'pending') { try { r = R.status(a, t, c); } catch (e) { r = null; } }
+c.reply = r || null; c.status = r && ANSWERED[r.state] ? 'answered' : c.baseStatus;
+if (c.status === 'pending' && !c.closed) a.pending++;
+}); });
+a.status = a.baseStatus === 'waiting_approval' && !a.pending ? 'idle' : a.baseStatus;
+});
+return d;
+}
+PO.data = {
+normalise: normalise, applyReplies: applyReplies, isClosed: isClosed, meeting: meeting, fireworks: fireworks, readInline: readInline, getJSON: getJSON,
+
+load: async function (cfg, last) {
+var url = cfg.data, err = null;
+if (url) {
+try {
+var raw = await getJSON(url);
+return { data: PO.data.adapt(raw, cfg), source: 'live' };
+} catch (e) { err = e; }
+if (last) return { data: last.data, source: last.source, error: err };
+}
+var snap = readInline('po-data');
+if (snap) return { data: PO.data.adapt(snap, cfg), source: 'snapshot', error: err };
+var sample = readInline('po-sample');
+if (!sample) { try { sample = await getJSON(cfg.sample || 'sample-data.json'); } catch (e) { sample = { office: { name: 'AI Office' }, agents: [] }; } }
+return { data: normalise(shiftDemo(JSON.parse(JSON.stringify(sample)))), source: 'sample', error: err };
+},
+adapt: function (raw, cfg) {
+var name = cfg.adapter, A = PO.adapters || {};
+if (!name || name === 'auto') { name = null; for (var k in A) if (A[k].detect && A[k].detect(raw)) { name = k; break; } }
+var d = name && A[name] ? A[name](raw, { name: cfg.title }) : raw;
+return normalise(shiftDemo(d));
+}
+};
+})(window.VisualOffice = window.VisualOffice || {});</script>
+<script>
+(function (root, factory) {
+var api = factory();
+if (typeof module === 'object' && module.exports) module.exports = api;
+else { root.VisualOffice = root.VisualOffice || {}; (root.VisualOffice.adapters = root.VisualOffice.adapters || {}).workbench = api; }
+})(typeof self !== 'undefined' ? self : this, function () {
+var RULES = { workingHours: 12, offlineHours: 48, doneMinutes: 30 };
+var TZ = 8 * 36e5;
+function bjYear(ms) { return new Date(ms + TZ).getUTCFullYear(); }
+function tms(s, now) {
+var m = String(s || '').match(/^(?:(\d{4})-)?(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/);
+if (!m) return 0;
+var f = function (y) { return Date.UTC(y, +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)) - TZ; };
+var y = m[1] ? +m[1] : bjYear(now), t = f(y);
+if (!m[1] && t > now + 2 * 864e5) t = f(y - 1); // "12-31" read in January belongs to last year
+return t;
+}
+function iso(ms) {
+if (!ms) return null;
+return new Date(ms + TZ).toISOString().slice(0, 19) + '+08:00';
+}
+function hash(s) { var h = 0x811c9dc5; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36); }
+var TASK_ST = { running: 'running', done: 'done', queue: 'queued', stuck: 'stuck', cancel: 'cancelled' };
+function convert(raw, opts) {
+opts = opts || {};
+var now = opts.now || Date.now(), R = Object.assign({}, RULES, opts.rules || {});
+var noteT = function (t) { var m = String(t.note || '').match(/^(\d{1,2}-\d{1,2} \d{1,2}:\d{2})/); return m ? tms(m[1], now) : 0; };
+var lastT = function (t) { return Math.max(tms(t.start, now), noteT(t), tms(t.end, now)); };
+var projects = (raw.projects || []).map(function (p) { return { id: p.id, name: p.name || p.id }; });
+var pname = function (id) { var p = projects.find(function (p) { return p.id === id; }); return p ? p.name : (id || ''); };
+var tasks = raw.tasks || [];
+var agents = (raw.agents || []).map(function (a) {
+var my = tasks.filter(function (t) { return t.agent === a.id && !t.shelved; });
+var act = my.filter(function (t) { return t.status !== 'cancel'; });
+var last = act.reduce(function (m, t) { return Math.max(m, lastT(t)); }, 0);
+var byRecent = function (x, y) { return lastT(y) - lastT(x); };
+var run = my.filter(function (t) { return t.status === 'running'; }).sort(byRecent);
+var isStuck = function (t) { return t.status === 'stuck' || (t.status === 'running' && (t.subs || []).some(function (s) { return s && s[1] === 'stuck'; })); };
+var stuck = my.filter(isStuck).sort(byRecent);
+var recent = run.filter(function (t) { return now - lastT(t) <= R.workingHours * 36e5; });
+var pending = 0; my.forEach(function (t) { if (t.status !== 'done' && t.status !== 'cancel') pending += (t.confirm || []).length; });   // questions on finished tasks never count
+var done = my.filter(function (t) { return t.status === 'done'; }).sort(function (x, y) { return (tms(y.end, now) || lastT(y)) - (tms(x.end, now) || lastT(x)); });
+var status;
+if (a.gone) status = 'offline';
+else if (stuck.length) status = 'stuck';
+else if (recent.length) status = 'working';
+else if (!last || now - last > R.offlineHours * 36e5) status = 'offline';
+else if (pending) status = 'waiting_approval';
+else if (done[0] && tms(done[0].end, now) && now - tms(done[0].end, now) <= R.doneMinutes * 6e4) status = 'done';
+else status = 'idle';
+var cur = stuck[0] || recent[0] || run[0] || null;
+return {
+id: a.id, name: a.name, role: a.main ? 'lead' : 'assistant', color: a.color || null,
+kind: a.kind === 'human' ? 'human' : 'ai', isBoss: !!a.main,
+status: status, currentTask: cur ? cur.name : null,
+project: cur ? cur.project || null : null, projectName: cur ? pname(cur.project) : null,
+lastActive: iso(last),
+tasks: my.map(function (t) {
+var id = hash(a.id + '|' + t.name), subs = t.subs || [];
+var sd = subs.filter(function (s) { return s && s[1] === 'done'; }).length;
+return {
+id: id, title: t.name,
+status: isStuck(t) ? 'stuck' : (TASK_ST[t.status] || t.status),
+project: t.project || null, projectName: pname(t.project), type: t.type || null,
+startedAt: iso(tms(t.start, now)), updatedAt: iso(lastT(t)), doneAt: iso(tms(t.end, now)),
+progress: t.status === 'done' ? 1 : subs.length ? Math.round(sd / subs.length * 100) / 100 : null,
+note: t.note || null,
+subtasks: subs.map(function (s) { return { title: s[0], status: TASK_ST[s[1]] || s[1] }; }),
+confirms: (t.confirm || []).map(function (q, i) {
+return typeof q === 'string' ? { id: id + '-c' + i, question: q, status: 'pending' }
+: { id: q.id || id + '-c' + i, question: q.question || q.q || '', status: q.status || 'pending' };
+})
+};
+})
+};
+});
+return { schemaVersion: 1, office: { name: opts.name || 'AI 像素办公室', updatedAt: iso(tms(raw.built, now)) }, projects: projects, agents: agents };
+}
+convert.detect = function (raw) { return !!(raw && Array.isArray(raw.tasks) && Array.isArray(raw.agents) && !raw.office); };
+convert.RULES = RULES; convert.convert = convert;
+return convert;
+});</script>
+<script>
+(function (PO) {
+var TW = 32, TH = 16, HW = 16, HH = 8, WALL_H = 46, BASE_H = 18;
+var P = {
+skyTop: '#4aa8ff', skyBottom: '#d4f0ff', sun: '#fff6c8', sunCore: '#ffffff',
+cloud: '#ffffff', cloudShade: '#d9ecfb', cloudShade2: '#bcdaf3',
+wood: ['#d39d64', '#c98f58', '#dca972'], woodSeam: '#b37b47',
+stone: '#e8ebf0', stone2: '#eef1f5', stoneSeam: '#d3d9e2',
+meet: '#f1f4f8', meetSeam: '#dde3eb', rug: '#efe4d1', rugEdge: '#d8c4a2', boss: '#f6f8fb',
+wall: '#f8f9fb', wallL: '#eceff4', wallShade: '#dfe4eb', gold: '#e2b24c', goldDark: '#b8862b', goldLight: '#f6d98a',
+glass: '#a8dcff', glassTop: '#d9f1ff', base: '#eef1f6', baseL: '#dbe1ea', baseDark: '#c3ccd8',
+outline: '#5b6679', white: '#ffffff', shade: '#e3e8ef', shade2: '#c9d1dc', visor: '#1d2943',
+screen: '#20304f', glow: '#7fe3ff', red: '#ff3b47'
+};
+var theme = { id: 'default', name: 'Cloud-top isometric', tile: { w: TW, h: TH }, wallH: WALL_H, baseH: BASE_H, palette: P,
+css: { '--accent': '#3a8dde', '--gold': '#c9952d', '--bg': '#eaf6ff', '--panel': 'rgba(255,255,255,.96)', '--ink': '#25324a' } };
+
+function mk(w, h, rf) { var c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); var x = c.getContext('2d', rf ? { willReadFrequently: true } : undefined); x.imageSmoothingEnabled = false; return c; }
+function rng(seed) { var s = seed >>> 0 || 1; return function () { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return ((s >>> 0) % 10000) / 10000; }; }
+function R(c, x, y, w, h, col) { c.fillStyle = col; c.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
+function line(c, x0, y0, x1, y1, col) { // pixel line, no anti-aliasing
+x0 = Math.round(x0); y0 = Math.round(y0); x1 = Math.round(x1); y1 = Math.round(y1);
+var dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1, e = dx + dy; c.fillStyle = col;
+for (var i = 0; i < 2000; i++) { c.fillRect(x0, y0, 1, 1); if (x0 === x1 && y0 === y1) break; var e2 = 2 * e; if (e2 >= dy) { e += dy; x0 += sx; } if (e2 <= dx) { e += dx; y0 += sy; } }
+}
+function poly(c, pts, col) { c.fillStyle = col; c.beginPath(); c.moveTo(pts[0][0], pts[0][1]); for (var i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]); c.closePath(); c.fill(); }
+
+function crisp(cv, outline) {
+var c = cv.getContext('2d'), im = c.getImageData(0, 0, cv.width, cv.height), d = im.data, w = cv.width, h = cv.height;
+for (var i = 3; i < d.length; i += 4) d[i] = d[i] < 120 ? 0 : 255;
+if (outline) {
+var o = hex(outline), src = new Uint8Array(w * h); for (var j = 0; j < w * h; j++) src[j] = d[j * 4 + 3] ? 1 : 0;
+for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var k = y * w + x; if (src[k]) continue;
+if ((x > 0 && src[k - 1]) || (x < w - 1 && src[k + 1]) || (y > 0 && src[k - w]) || (y < h - 1 && src[k + w])) { d[k * 4] = o[0]; d[k * 4 + 1] = o[1]; d[k * 4 + 2] = o[2]; d[k * 4 + 3] = 255; } }
+}
+c.putImageData(im, 0, 0); return cv;
+}
+function hex(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+function mix(a, b, t) { var A = hex(a), B = hex(b); return 'rgb(' + A.map(function (v, i) { return Math.round(v + (B[i] - v) * t); }).join(',') + ')'; }
+function diamond(c, cx, top, col) { c.fillStyle = col; for (var r = 0; r < TH; r++) { var hw = r < HH ? (r + 1) * 2 : (TH - r) * 2; c.fillRect(cx - hw, top + r, hw * 2, 1); } }
+
+function ptr(ax, ay) { return function (x, y, z) { return [ax + (x - y) * HW, ay + (x + y) * HH - (z || 0)]; }; }
+function box(c, p, x0, y0, x1, y1, z0, z1, top, left, right) {
+poly(c, [p(x0, y1, z0), p(x1, y1, z0), p(x1, y1, z1), p(x0, y1, z1)], left);
+poly(c, [p(x1, y0, z0), p(x1, y1, z0), p(x1, y1, z1), p(x1, y0, z1)], right);
+poly(c, [p(x0, y0, z1), p(x1, y0, z1), p(x1, y1, z1), p(x0, y1, z1)], top);
+}
+function sprite(w, h, z, draw, opt) { // footprint w x h tiles, height z px
+opt = opt || {}; var pad = 3, cw = (w + h) * HW + pad * 2, ch = (w + h) * HH + z + pad * 2;
+var cv = mk(cw, ch, 1), ax = h * HW + pad, ay = z + pad; draw(cv.getContext('2d'), ptr(ax, ay), cv);
+if (!opt.soft) crisp(cv, opt.outline === false ? null : (opt.outline || P.outline));
+return { img: cv, ax: ax, ay: ay };
+}
+theme.helpers = { mk: mk, R: R, line: line, poly: poly, crisp: crisp, diamond: diamond, box: box, sprite: sprite, rng: rng, mix: mix };
+
+var skyCache = null, clouds = null, towers = null, sunSpr = null;
+function cloudSprite(seed, w) {
+var r = rng(seed), h = Math.round(w * 0.42), cv = mk(w, h, 1), c = cv.getContext('2d'), n = 5 + Math.floor(r() * 4);
+for (var i = 0; i < n; i++) { var bx = w * (0.15 + 0.7 * i / (n - 1)), rad = h * (0.28 + r() * 0.22); c.fillStyle = P.cloud; c.beginPath(); c.arc(bx, h - rad - 2, rad, 0, 7); c.fill(); }
+c.fillRect(w * 0.1, h * 0.62, w * 0.8, h * 0.3);
+crisp(cv);
+var im = c.getImageData(0, 0, w, h), d = im.data, s1 = hex(P.cloudShade), s2 = hex(P.cloudShade2);
+for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var k = (y * w + x) * 4; if (!d[k + 3]) continue;
+var below = y + 3 < h ? d[((y + 3) * w + x) * 4 + 3] : 0, t = y / h;
+var s = (!below || t > 0.82) ? s2 : t > 0.6 && ((x + y) % 2 === 0 || t > 0.7) ? s1 : null; if (s) { d[k] = s[0]; d[k + 1] = s[1]; d[k + 2] = s[2]; } }
+c.putImageData(im, 0, 0); return cv;
+}
+function towerSprite(seed, s) { // a small floating sky island with white spires
+var r = rng(seed), w = Math.round(46 * s), h = Math.round(90 * s), cv = mk(w, h, 1), c = cv.getContext('2d'), mid = w / 2, isl = h * 0.72;
+poly(c, [[w * 0.1, isl], [w * 0.9, isl], [mid + w * 0.12, h - 2], [mid - w * 0.08, h - 6]], '#c7d6e8');
+poly(c, [[w * 0.1, isl], [w * 0.9, isl], [w * 0.8, isl + 4 * s], [w * 0.2, isl + 4 * s]], '#e9f1fa');
+var spires = [[0, 1], [-0.24, 0.62], [0.24, 0.7], [-0.4, 0.38], [0.38, 0.42]];
+spires.forEach(function (sp, i) {
+var cx = mid + sp[0] * w, ht = (isl - 6) * sp[1] * (0.85 + r() * 0.15), bw = (i ? 5 : 7) * s;
+R(c, cx - bw, isl - ht, bw * 2, ht, i % 2 ? '#e4edf8' : '#f3f7fc'); R(c, cx + bw * 0.3, isl - ht, bw * 0.7, ht, '#d3e0ef');
+poly(c, [[cx - bw, isl - ht], [cx + bw, isl - ht], [cx, isl - ht - bw * 3]], '#f7fbff');
+R(c, cx - 0.5, isl - ht - bw * 3 - 3 * s, 1, 3 * s, P.gold);
+for (var y = isl - ht + 4; y < isl - 4; y += 6 * s) R(c, cx - bw * 0.4, y, Math.max(1, bw * 0.5), 2, '#9fcff5');
+R(c, cx - bw, isl - ht + 2, bw * 2, 1, P.goldLight);
+});
+return crisp(cv);
+}
+theme.drawSky = function (c, w, h, t, cam) {
+if (!skyCache || skyCache.width !== w || skyCache.height !== h) {
+skyCache = mk(w, h); var g = skyCache.getContext('2d'), bands = 14;
+for (var y = 0; y < h; y++) { var f = y / h * (bands - 1), b = Math.floor(f), fr = f - b;
+for (var x = 0; x < w; x += 1) {  }
+var col0 = mix(P.skyTop, P.skyBottom, b / (bands - 1)), col1 = mix(P.skyTop, P.skyBottom, Math.min(1, (b + 1) / (bands - 1)));
+R(g, 0, y, w, 1, col0);
+if (fr > 0.5) { g.fillStyle = col1; for (var xx = (y % 2) * 1; xx < w; xx += 2) g.fillRect(xx, y, 1, 1); }
+}
+if (!clouds) { clouds = []; var r = rng(7); for (var i = 0; i < 9; i++) clouds.push({ img: cloudSprite(11 + i * 7, 40 + Math.floor(r() * 50)), x: r(), y: r(), sp: 2 + r() * 4, par: 0.12 + r() * 0.1 }); }
+if (!towers) { towers = [{ img: towerSprite(3, 1), x: 0.06, y: 0.08 }, { img: towerSprite(5, 0.7), x: 0.2, y: 0.3 }, { img: towerSprite(9, 1.15), x: 0.78, y: 0.1 }, { img: towerSprite(13, 0.8), x: 0.9, y: 0.36 }, { img: towerSprite(17, 0.55), x: 0.62, y: 0.02 }]; }
+}
+c.drawImage(skyCache, 0, 0);
+var sx = Math.round(w * 0.86 - cam.x * 0.03), sy = Math.round(Math.min(h * 0.14, 46) - cam.y * 0.03), pulse = Math.sin(t / 900) > 0 ? 1 : 0;
+c.globalAlpha = 0.25; c.fillStyle = P.sun; c.beginPath(); c.arc(sx, sy, 26 + pulse * 2, 0, 7); c.fill();
+c.globalAlpha = 0.45; c.beginPath(); c.arc(sx, sy, 19, 0, 7); c.fill(); c.globalAlpha = 1;
+c.fillStyle = P.sunCore; c.beginPath(); c.arc(sx, sy, 13, 0, 7); c.fill();
+for (var k = 0; k < 8; k++) { var a = k / 8 * Math.PI * 2 + t / 6000, r0 = 31, r1 = 37 + (k % 2) * 5; line(c, sx + Math.cos(a) * r0, sy + Math.sin(a) * r0, sx + Math.cos(a) * r1, sy + Math.sin(a) * r1, '#fffbe0'); }
+towers.forEach(function (tw) { c.drawImage(tw.img, Math.round(tw.x * w - tw.img.width / 2 - cam.x * 0.06), Math.round(tw.y * h + Math.sin(t / 3000 + tw.x * 9) * 2 - cam.y * 0.06)); });
+clouds.forEach(function (cl) { var span = w + cl.img.width * 2, x = ((cl.x * span + t / 1000 * cl.sp - cam.x * cl.par) % span + span) % span - cl.img.width;
+c.drawImage(cl.img, Math.round(x), Math.round(cl.y * h * 0.9 - cam.y * cl.par)); });
+};
+
+var fg = null;
+theme.drawForeground = function (c, t, world) {
+if (!fg) { fg = []; var r = rng(99); for (var i = 0; i < 6; i++) fg.push({ img: cloudSprite(200 + i * 13, 70 + Math.floor(r() * 60)), x: r(), y: 0.86 + r() * 0.1, sp: 1.5 + r() * 2 }); }
+fg.forEach(function (cl) { var span = world.w + cl.img.width, x = ((cl.x * span + t / 1000 * cl.sp) % span + span) % span - cl.img.width / 2;
+c.globalAlpha = 0.92; c.drawImage(cl.img, Math.round(x), Math.round(world.h * cl.y - cl.img.height / 2)); c.globalAlpha = 1; });
+};
+
+theme.buildStatic = function (L, iso, W, H) {
+var cv = mk(W, H), c = cv.getContext('2d'), F = function (x, y) { return x < 0 || y < 0 || x >= L.cols || y >= L.rows ? '.' : L.floor[y][x]; };
+var front = iso.toWorld(L.cols, L.rows), left = iso.toWorld(0, L.rows), right = iso.toWorld(L.cols, 0);
+[[0.3, 0.5], [0.5, 0.5], [0.7, 0.5]].forEach(function (f, i) {
+var bx = Math.round(left.x + (right.x - left.x) * f[0]), by = Math.round(left.y + (front.y - left.y) * 0.5 + (i === 1 ? 46 : 26));
+var hgt = i === 1 ? 70 : 46, top = by - 60;
+R(c, bx - 9, top, 18, hgt + 40, P.base); R(c, bx + 3, top, 6, hgt + 40, P.baseL); R(c, bx - 9, top + hgt, 18, 2, P.gold); R(c, bx - 9, top + 14, 18, 1, P.goldLight);
+});
+for (var y = 0; y < L.rows; y++) for (var x = 0; x < L.cols; x++) {
+if (F(x, y) === '.') continue;
+if (F(x + 1, y) === '.') { var E = iso.toWorld(x + 1, y); for (var i = 0; i < HW; i++) { var px = E.x - i - 1, py = E.y + Math.floor(i / 2) + 1;
+R(c, px, py, 1, BASE_H, P.base); R(c, px, py, 1, 2, P.gold); R(c, px, py + BASE_H - 6, 1, 6, P.baseL); R(c, px, py + BASE_H - 1, 1, 1, P.baseDark); if ((x + i) % 8 === 0) R(c, px, py + 3, 1, BASE_H - 8, P.baseL); } }
+if (F(x, y + 1) === '.') { var Wp = iso.toWorld(x, y + 1); for (var j = 0; j < HW; j++) { var qx = Wp.x + j, qy = Wp.y + Math.floor(j / 2) + 1;
+R(c, qx, qy, 1, BASE_H, P.baseL); R(c, qx, qy, 1, 2, P.goldDark); R(c, qx, qy + BASE_H - 6, 1, 6, P.baseDark); R(c, qx, qy + BASE_H - 1, 1, 1, '#aab5c4'); if ((y + j) % 8 === 0) R(c, qx, qy + 3, 1, BASE_H - 8, P.base); } }
+}
+for (y = 0; y < L.rows; y++) for (x = 0; x < L.cols; x++) {
+var f = F(x, y); if (f === '.') continue; var N = iso.toWorld(x, y), top = N.y, cx = N.x;
+if (f === 'w') { diamond(c, cx, top, P.wood[(x * 7 + y * 3) % 3 === 0 ? 2 : 0]);
+for (var k = 1; k < 4; k++) { var a = iso.toWorld(x, y + k / 4), b = iso.toWorld(x + 1, y + k / 4); line(c, a.x + 1, a.y, b.x - 1, b.y, k === 2 ? P.woodSeam : P.wood[1]); }
+var s0 = iso.toWorld(x + ((x * 13 + y * 5) % 3 + 1) / 4, y); line(c, s0.x, s0.y + 1, s0.x - 3, s0.y + 2, P.woodSeam);
+} else if (f === 's' || f === 'b') { diamond(c, cx, top, f === 'b' ? P.boss : (x + y) % 2 ? P.stone : P.stone2);
+var n1 = iso.toWorld(x, y + 1), e1 = iso.toWorld(x + 1, y); line(c, n1.x, n1.y, cx, top, P.stoneSeam); line(c, cx, top, e1.x - 1, e1.y, P.stoneSeam);
+} else if (f === 'm') { diamond(c, cx, top, P.meet); var w1 = iso.toWorld(x, y + 1); line(c, w1.x, w1.y, cx, top, P.meetSeam); line(c, cx, top, cx + HW - 1, top + HH - 1, P.meetSeam);
+} else if (f === 'r') { diamond(c, cx, top, P.rug);
+var edge = function (dx, dy) { return F(x + dx, y + dy) !== 'r'; };
+if (edge(0, -1)) line(c, cx, top + 1, cx + HW - 2, top + HH, P.rugEdge); if (edge(-1, 0)) line(c, cx, top + 1, cx - HW + 2, top + HH, P.rugEdge);
+if (edge(1, 0)) line(c, cx + HW - 2, top + HH, cx, top + TH - 2, P.rugEdge); if (edge(0, 1)) line(c, cx - HW + 2, top + HH, cx, top + TH - 2, P.rugEdge);
+if ((x + y) % 2 === 0) R(c, cx - 1, top + HH - 1, 2, 2, P.rugEdge);
+}
+if (F(x + 1, y) === '.') line(c, cx + HW - 1, top + HH - 1, cx, top + TH - 1, P.gold);
+if (F(x, y + 1) === '.') line(c, cx - HW, top + HH, cx - 1, top + TH - 1, P.gold);
+}
+var bt = L.zones.boss.tiles, mx = 0, my = 0; bt.forEach(function (p) { mx += p[0] + 0.5; my += p[1] + 0.5; }); mx /= bt.length; my /= bt.length;
+var C = iso.toWorld(mx, my); theme._bossCenter = C;
+ring(c, C.x, C.y, 2.1, P.gold); ring(c, C.x, C.y, 1.95, P.goldLight); ring(c, C.x, C.y, 1.45, P.glow); ring(c, C.x, C.y, 1.38, '#c9f5ff');
+if (L.walls.back_y) for (x = 0; x < L.cols; x++) { if (F(x, 0) === '.') continue; wallSeg(c, iso, x, 'y', inRange(x, L.walls.windows_y0), x % 4 === 0); }
+if (L.walls.back_x) for (y = 0; y < L.rows; y++) { if (F(0, y) === '.') continue; wallSeg(c, iso, y, 'x', inRange(y, L.walls.windows_x0), y % 4 === 0, L.walls.painting_x0); }
+var O = iso.toWorld(0, 0); R(c, O.x - 3, O.y - WALL_H - 3, 6, WALL_H + 3, P.wall); R(c, O.x - 3, O.y - WALL_H - 4, 6, 3, P.gold); R(c, O.x + 1, O.y - WALL_H, 2, WALL_H, P.wallShade);
+return cv;
+};
+function inRange(v, rs) { return (rs || []).some(function (r) { return v >= r[0] && v <= r[1]; }); }
+function ring(c, x, y, rad, col) { c.fillStyle = col; for (var a = 0; a < 360; a += 1.2) { var r = a * Math.PI / 180; c.fillRect(Math.round(x + Math.cos(r) * rad * HW * 1.414 / 1.0), Math.round(y + Math.sin(r) * rad * HH * 1.414), 1, 1); } }
+function wallSeg(c, iso, i, axis, win, pillar, painting) {
+var N = axis === 'y' ? iso.toWorld(i, 0) : iso.toWorld(0, i), dir = axis === 'y' ? 1 : -1, base = axis === 'y' ? P.wall : P.wallL;
+for (var k = 0; k < HW; k++) {
+var x = N.x + dir * k + (dir < 0 ? -1 : 0), yb = N.y + Math.floor(k / 2), yt = yb - WALL_H;
+R(c, x, yt, 1, WALL_H, base); R(c, x, yt - 3, 1, 3, P.white); R(c, x, yt - 1, 1, 2, P.gold); R(c, x, yb - 3, 1, 3, P.gold); R(c, x, yb - 4, 1, 1, P.goldLight);
+if (win && k > 1 && k < HW - 1) { // floor-to-ceiling glass with sky + highlights
+var gy = yt + 5, gh = WALL_H - 10;
+for (var r = 0; r < gh; r++) R(c, x, gy + r, 1, 1, r < gh * 0.35 ? P.glassTop : r < gh * 0.7 ? '#c2e7ff' : P.glass);
+if ((k + i * 3) % 11 < 2) R(c, x, gy + 3 + (k % 5), 1, gh - 14, '#f4fbff');
+if (k === 2 || k === HW - 2) R(c, x, gy, 1, gh, P.goldLight);
+}
+if (painting && axis === 'x' && i >= painting[0] && i <= painting[1] && k > 2 && k < HW - 2) {
+var py = yt + 12; R(c, x, py, 1, 16, P.gold); var mid = (i - painting[0]) * HW + k;
+if (mid > 3 && mid < (painting[1] - painting[0] + 1) * HW - 3) { R(c, x, py + 1, 1, 9, '#bfe4ff'); R(c, x, py + 10 - Math.round(3 + 2 * Math.sin(mid / 4)), 1, Math.round(3 + 2 * Math.sin(mid / 4)) + 4, '#8fcf7a'); R(c, x, py + 13, 1, 2, '#6fb565'); }
+}
+if (pillar && k < 3) { R(c, x, yt - 3, 1, WALL_H + 3, k === 1 ? P.white : P.shade); R(c, x, yt - 4, 1, 3, P.gold); }
+if (axis === 'x' && !win && !painting) {}
+}
+}
+
+var SPR = {};
+theme.sprites = function (o) {
+var key = o.type + '|' + (o.w || 1) + 'x' + (o.h || 1) + '|' + (o.axis || '') + '|' + (o.v || 0) + '|' + (o.face ? o.face.join(',') : '');
+if (SPR[key]) return SPR[key];
+var f = MAKERS[o.type]; return (SPR[key] = f ? f(o) : []);
+};
+function backSide(face) { return face ? [-face[0], -face[1]] : [0, 0]; }
+var MAKERS = {
+desk: function () {
+var s = sprite(1, 1, 30, function (c, p) {
+box(c, p, 0.08, 0.06, 0.88, 0.94, 0, 12, P.white, P.shade, P.shade2);
+poly(c, [p(0.08, 0.94, 12), p(0.88, 0.94, 12), p(0.88, 0.94, 11), p(0.08, 0.94, 11)], P.gold);
+poly(c, [p(0.88, 0.06, 12), p(0.88, 0.94, 12), p(0.88, 0.94, 11), p(0.88, 0.06, 11)], P.gold);
+box(c, p, 0.12, 0.1, 0.4, 0.5, 2, 11, P.shade, '#d6dde7', '#c5cedb'); // drawer
+box(c, p, 0.28, 0.38, 0.36, 0.62, 12, 14, P.shade2, P.shade2, P.shade2);
+poly(c, [p(0.32, 0.12, 15), p(0.32, 0.88, 15), p(0.32, 0.88, 29), p(0.32, 0.12, 29)], P.white);
+poly(c, [p(0.34, 0.16, 16.5), p(0.34, 0.84, 16.5), p(0.34, 0.84, 27.5), p(0.34, 0.16, 27.5)], P.screen);
+for (var k = 0; k < 4; k++) { var a = p(0.35, 0.22, 25 - k * 2.6), b = p(0.35, 0.22 + 0.12 + ((k * 37) % 5) * 0.08, 25 - k * 2.6); line(theme._c = c, a[0], a[1], b[0], b[1], k % 2 ? '#8fe3ff' : '#ffd77a'); }
+poly(c, [p(0.52, 0.3, 12.5), p(0.7, 0.3, 12.5), p(0.7, 0.72, 12.5), p(0.52, 0.72, 12.5)], '#dfe5ee'); // keyboard
+poly(c, [p(0.6, 0.78, 12.5), p(0.7, 0.78, 12.5), p(0.7, 0.86, 12.5), p(0.6, 0.86, 12.5)], P.white);
+});
+s.screen = { x: 0.34, y: 0.5, z: 22 }; return [s];
+},
+chair: function (o) {
+var bk = backSide(o.face || [-1, 0]);
+var seat = sprite(1, 1, 22, function (c, p) {
+box(c, p, 0.46, 0.46, 0.54, 0.54, 0, 6, '#8a94a6', '#8a94a6', '#6f7a8c');
+poly(c, [p(0.3, 0.3, 1), p(0.7, 0.3, 1), p(0.7, 0.7, 1), p(0.3, 0.7, 1)], '#7d8798');
+box(c, p, 0.24, 0.24, 0.76, 0.76, 6, 9, '#5f6b80', '#4f5a6d', '#465063');
+});
+var x0 = 0.24, x1 = 0.76, y0 = 0.24, y1 = 0.76;
+if (bk[0] > 0) { x0 = 0.7; x1 = 0.8; } else if (bk[0] < 0) { x0 = 0.2; x1 = 0.3; } else if (bk[1] > 0) { y0 = 0.7; y1 = 0.8; } else { y0 = 0.2; y1 = 0.3; }
+var back = sprite(1, 1, 24, function (c, p) { box(c, p, x0, y0, x1, y1, 8, 21, '#6b778c', '#556075', '#4b5568'); poly(c, [p(x0, y1, 21), p(x1, y1, 21), p(x1, y1, 20), p(x0, y1, 20)], P.gold); });
+var front = bk[0] + bk[1] > 0; // backrest on the camera side -> drawn over the sitter
+seat.bias = -0.4; back.bias = front ? 0.35 : -0.35; return [seat, back];
+},
+boss_desk: function (o) {
+var s = sprite(o.w || 1, o.h || 3, 20, function (c, p) {
+box(c, p, 0.1, 0.05, 0.85, 2.95, 0, 14, P.white, P.shade, P.shade2);
+poly(c, [p(0.1, 2.95, 14), p(0.85, 2.95, 14), p(0.85, 2.95, 12), p(0.1, 2.95, 12)], P.gold);
+poly(c, [p(0.85, 0.05, 14), p(0.85, 2.95, 14), p(0.85, 2.95, 12), p(0.85, 0.05, 12)], P.gold);
+poly(c, [p(0.85, 0.05, 7), p(0.85, 2.95, 7), p(0.85, 2.95, 6), p(0.85, 0.05, 6)], P.glow);
+poly(c, [p(0.2, 0.4, 15), p(0.5, 0.4, 17), p(0.5, 2.6, 17), p(0.2, 2.6, 15)], '#bfeaff');
+poly(c, [p(0.24, 0.6, 15.5), p(0.46, 0.6, 16.6), p(0.46, 1.4, 16.6), p(0.24, 1.4, 15.5)], '#8fd8ff');
+poly(c, [p(0.24, 1.6, 15.5), p(0.46, 1.6, 16.6), p(0.46, 2.4, 16.6), p(0.24, 2.4, 15.5)], '#8fd8ff');
+var e = p(0.85, 1.5, 9); R(c, e[0] - 2, e[1] - 2, 4, 4, P.gold); R(c, e[0] - 1, e[1] - 1, 2, 2, P.goldLight);
+});
+return [s];
+},
+meeting_table: function (o) {
+return [sprite(o.w || 3, o.h || 2, 20, function (c, p) {
+box(c, p, 1.3, 0.8, 1.7, 1.2, 0, 9, P.shade2, P.shade2, '#b9c3d1');
+box(c, p, 0.15, 0.15, 2.85, 1.85, 9, 12, P.white, P.shade, P.shade2);
+poly(c, [p(0.15, 1.85, 12), p(2.85, 1.85, 12), p(2.85, 1.85, 11), p(0.15, 1.85, 11)], P.gold);
+poly(c, [p(2.85, 0.15, 12), p(2.85, 1.85, 12), p(2.85, 1.85, 11), p(2.85, 0.15, 11)], P.gold);
+poly(c, [p(1.1, 0.75, 12.5), p(1.9, 0.75, 12.5), p(1.9, 1.25, 12.5), p(1.1, 1.25, 12.5)], '#cfeefe');
+[[0.6, 0.5], [2.3, 1.4], [0.7, 1.4]].forEach(function (q) { var a = p(q[0], q[1], 13); R(c, a[0] - 2, a[1] - 1, 4, 2, '#dfe5ee'); });
+})];
+},
+bookshelf: function (o) {
+return [sprite(o.w || 2, o.h || 1, 44, function (c, p) {
+box(c, p, 0, 0.05, 2, 0.6, 0, 42, '#c98f58', '#b57a45', '#a36b3a');
+var r = rng(42), cols = ['#ff6a6a', '#4f9dff', '#ffd25a', '#46c49a', '#c08bff', '#ffffff', '#ff9f5a', '#2f4a7a'];
+for (var sh = 0; sh < 4; sh++) { var z0 = 3 + sh * 10; poly(c, [p(0.05, 0.6, z0), p(1.95, 0.6, z0), p(1.95, 0.6, z0 + 1), p(0.05, 0.6, z0 + 1)], P.goldDark);
+var x = 0.08; while (x < 1.9) { var bw = 0.06 + r() * 0.05, bh = 5 + Math.floor(r() * 4), col = cols[Math.floor(r() * cols.length)];
+if (r() < 0.12) { x += 0.12; continue; }
+poly(c, [p(x, 0.6, z0 + 1), p(x + bw, 0.6, z0 + 1), p(x + bw, 0.6, z0 + 1 + bh), p(x, 0.6, z0 + 1 + bh)], col); x += bw + 0.01; } }
+poly(c, [p(0, 0.6, 42), p(2, 0.6, 42), p(2, 0.6, 40), p(0, 0.6, 40)], P.gold);
+})];
+},
+coffee_bar: function (o) {
+return [sprite(o.w || 1, o.h || 3, 34, function (c, p) {
+box(c, p, 0.1, 0.05, 0.9, 2.95, 0, 15, P.white, '#c98f58', '#b57a45');
+for (var k = 1; k < 6; k++) { var a = p(0.9, k * 0.5, 2), b = p(0.9, k * 0.5, 13); line(c, a[0], a[1], b[0], b[1], '#a36b3a'); }
+poly(c, [p(0.1, 0.05, 15), p(0.9, 0.05, 15), p(0.9, 2.95, 15), p(0.1, 2.95, 15)], P.white);
+poly(c, [p(0.9, 0.05, 15), p(0.9, 2.95, 15), p(0.9, 2.95, 14), p(0.9, 0.05, 14)], P.gold);
+poly(c, [p(0.1, 2.95, 15), p(0.9, 2.95, 15), p(0.9, 2.95, 14), p(0.1, 2.95, 14)], P.gold);
+box(c, p, 0.2, 2.1, 0.8, 2.75, 15, 31, '#c3ccd8', '#9aa6b6', '#8794a6');
+poly(c, [p(0.3, 2.75, 27), p(0.7, 2.75, 27), p(0.7, 2.75, 22), p(0.3, 2.75, 22)], '#2a3448');
+var d = p(0.5, 2.75, 21); R(c, d[0] - 1, d[1], 3, 2, P.white); R(c, d[0] - 4, d[1] - 9, 2, 2, '#ff6a6a'); R(c, d[0] + 3, d[1] - 9, 2, 2, '#46c49a');
+[0.5, 0.9, 1.3].forEach(function (y, i) { box(c, p, 0.3, y, 0.5, y + 0.2, 15, 21 + i, '#f7e6c8', '#e3c79a', '#d3b383'); });
+box(c, p, 0.55, 1.6, 0.7, 1.75, 15, 19, P.white, P.shade, P.shade2);
+})];
+},
+stool: function () {
+return [sprite(1, 1, 16, function (c, p) { box(c, p, 0.46, 0.46, 0.54, 0.54, 0, 9, P.gold, P.gold, P.goldDark); poly(c, [p(0.3, 0.3, 1), p(0.7, 0.3, 1), p(0.7, 0.7, 1), p(0.3, 0.7, 1)], P.goldDark);
+box(c, p, 0.28, 0.28, 0.72, 0.72, 9, 12, P.white, P.shade, P.shade2); })].map(function (s) { s.bias = -0.4; return s; });
+},
+arcade: function () {
+var s = sprite(1, 1, 40, function (c, p) {
+box(c, p, 0.15, 0.15, 0.85, 0.75, 0, 38, P.white, '#efe9ff', '#d9cff7');
+poly(c, [p(0.2, 0.75, 34), p(0.8, 0.75, 34), p(0.8, 0.75, 22), p(0.2, 0.75, 22)], '#1c2240');
+for (var k = 0; k < 5; k++) { var a = p(0.26 + k * 0.1, 0.75, 31 - (k % 3) * 2); R(c, a[0], a[1], 2, 2, ['#ff6a6a', '#ffd25a', '#4f9dff', '#46c49a', '#c08bff'][k]); }
+box(c, p, 0.2, 0.75, 0.8, 0.95, 16, 20, '#e9e2ff', '#cdbff5', '#b9a8ee');
+var j = p(0.4, 0.85, 20); R(c, j[0], j[1] - 3, 1, 3, P.outline); R(c, j[0] - 1, j[1] - 4, 3, 2, '#ff3b47'); var b = p(0.65, 0.85, 20); R(c, b[0], b[1] - 1, 2, 1, '#4f9dff');
+poly(c, [p(0.15, 0.75, 38), p(0.85, 0.75, 38), p(0.85, 0.75, 35), p(0.15, 0.75, 35)], '#c08bff');
+poly(c, [p(0.85, 0.15, 38), p(0.85, 0.75, 38), p(0.85, 0.75, 37), p(0.85, 0.15, 37)], P.gold);
+});
+s.screen = { x: 0.5, y: 0.76, z: 28 }; return [s];
+},
+armchair: function (o) {
+var bk = backSide(o.face || [1, 0]);
+return [sprite(1, 1, 22, function (c, p) {
+box(c, p, 0.15, 0.15, 0.85, 0.85, 0, 8, '#fbf6ee', '#eadfcd', '#dccfb9');
+var x0 = 0.15, x1 = 0.85, y0 = 0.15, y1 = 0.85;
+if (bk[0] > 0) x0 = 0.68; else if (bk[0] < 0) x1 = 0.32; else if (bk[1] > 0) y0 = 0.68; else y1 = 0.32;
+box(c, p, x0, y0, x1, y1, 8, 18, '#fbf6ee', '#eadfcd', '#dccfb9');
+poly(c, [p(0.15, 0.85, 1), p(0.85, 0.85, 1), p(0.85, 0.85, 0), p(0.15, 0.85, 0)], P.gold);
+})].map(function (s) { s.bias = bk[0] + bk[1] > 0 ? 0.35 : -0.35; return s; });
+},
+side_table: function () {
+return [sprite(1, 1, 22, function (c, p) { box(c, p, 0.45, 0.45, 0.55, 0.55, 0, 8, P.gold, P.gold, P.goldDark); box(c, p, 0.25, 0.25, 0.75, 0.75, 8, 10, P.white, P.shade, P.gold);
+box(c, p, 0.42, 0.42, 0.58, 0.58, 10, 14, P.white, P.shade, P.shade2); var t = p(0.5, 0.5, 15); R(c, t[0] - 2, t[1] - 3, 4, 3, '#58b368'); R(c, t[0] - 1, t[1] - 5, 2, 2, '#7cd17e'); })];
+},
+pod: function () {
+var base = sprite(1, 1, 14, function (c, p) {
+box(c, p, 0.08, 0.08, 0.92, 0.92, 0, 6, P.white, P.shade, P.shade2);
+poly(c, [p(0.08, 0.92, 3), p(0.92, 0.92, 3), p(0.92, 0.92, 2), p(0.08, 0.92, 2)], P.glow);
+poly(c, [p(0.92, 0.08, 3), p(0.92, 0.92, 3), p(0.92, 0.92, 2), p(0.92, 0.08, 2)], P.glow);
+poly(c, [p(0.2, 0.2, 6.5), p(0.8, 0.2, 6.5), p(0.8, 0.8, 6.5), p(0.2, 0.8, 6.5)], '#dbeaff');
+});
+base.bias = -0.45;
+var dome = sprite(1, 1, 34, function (c, p) {
+var ctr = p(0.5, 0.5, 6), w = 13, h = 26;
+c.fillStyle = 'rgba(180,228,255,0.30)'; c.beginPath(); c.ellipse(ctr[0], ctr[1] - h * 0.48, w, h * 0.55, 0, Math.PI, 0); c.lineTo(ctr[0] + w, ctr[1]); c.lineTo(ctr[0] - w, ctr[1]); c.fill();
+c.fillStyle = 'rgba(255,255,255,0.75)'; c.fillRect(Math.round(ctr[0] - w + 4), Math.round(ctr[1] - h * 0.55), 2, 10); c.fillRect(Math.round(ctr[0] - w + 3), Math.round(ctr[1] - h * 0.55 + 12), 1, 4);
+line(c, ctr[0] - w, ctr[1], ctr[0] + w, ctr[1], P.gold); line(c, ctr[0] - w, ctr[1] - 1, ctr[0] + w, ctr[1] - 1, P.goldLight);
+c.fillStyle = 'rgba(120,150,190,0.55)'; c.beginPath(); c.ellipse(ctr[0], ctr[1] - h * 0.48, w, h * 0.55, 0, Math.PI, 0); c.lineWidth = 1; c.strokeStyle = 'rgba(110,140,180,0.7)'; c.stroke();
+}, { soft: true });
+dome.bias = 0.45; return [base, dome];
+},
+plant: function (o) {
+var v = o.v || 0;
+return [sprite(1, 1, 40, function (c, p) {
+box(c, p, 0.3, 0.3, 0.7, 0.7, 0, 9, P.white, P.shade, P.shade2); poly(c, [p(0.3, 0.7, 7), p(0.7, 0.7, 7), p(0.7, 0.7, 6), p(0.3, 0.7, 6)], P.gold);
+poly(c, [p(0.7, 0.3, 7), p(0.7, 0.7, 7), p(0.7, 0.7, 6), p(0.7, 0.3, 6)], P.gold);
+var t = p(0.5, 0.5, 9), r = rng(5 + v * 17), G = ['#3f9e57', '#58b86a', '#7fd27f', '#2f7f49'];
+if (v === 0) { for (var i = 0; i < 26; i++) { var a = r() * 6.28, d = r() * 9; R(c, t[0] + Math.cos(a) * d * 1.1 - 2, t[1] - 13 + Math.sin(a) * d - 2, 4, 3, G[i % 4]); } }
+else if (v === 1) { R(c, t[0], t[1] - 24, 1, 24, '#8a6a3c'); for (var j = 0; j < 7; j++) { var aa = -Math.PI / 2 + (j - 3) * 0.45; for (var s = 2; s < 12; s++) R(c, t[0] + Math.cos(aa) * s, t[1] - 24 + Math.sin(aa) * s * 0.7 + s * s * 0.05, 2, 2, G[(j + s) % 3]); } }
+else { for (var q = 0; q < 6; q++) { var b = -Math.PI / 2 + (q - 2.5) * 0.5, L = 9 + r() * 6, ex = t[0] + Math.cos(b) * L, ey = t[1] - 4 + Math.sin(b) * L; line(c, t[0], t[1] - 2, ex, ey, '#2f7f49'); c.fillStyle = G[q % 3]; c.beginPath(); c.ellipse(ex, ey, 4, 3, b, 0, 7); c.fill(); } }
+})];
+},
+glass: function (o) {
+var ax = o.axis || 'y';
+var s = sprite(1, 1, 40, function (c, p) {
+var A = ax === 'y' ? [p(0.5, 0, 0), p(0.5, 1, 0)] : [p(0, 0.5, 0), p(1, 0.5, 0)], Hh = 36;
+c.fillStyle = 'rgba(190,232,255,0.32)'; c.beginPath(); c.moveTo(A[0][0], A[0][1]); c.lineTo(A[1][0], A[1][1]); c.lineTo(A[1][0], A[1][1] - Hh); c.lineTo(A[0][0], A[0][1] - Hh); c.closePath(); c.fill();
+line(c, A[0][0], A[0][1] - Hh, A[1][0], A[1][1] - Hh, P.gold); line(c, A[0][0], A[0][1] - 1, A[1][0], A[1][1] - 1, P.goldDark);
+R(c, A[0][0], A[0][1] - Hh, 1, Hh, P.goldLight);
+c.fillStyle = 'rgba(255,255,255,0.7)'; var m = [(A[0][0] * 0.6 + A[1][0] * 0.4), (A[0][1] * 0.6 + A[1][1] * 0.4)]; for (var k = 0; k < 10; k++) c.fillRect(Math.round(m[0] + k * 0.5), Math.round(m[1] - 8 - k * 2), 1, 2);
+}, { soft: true });
+s.bias = 0.1; return [s];
+}
+};
+
+var HAIR = ['#3b2a20', '#6b4a2e', '#1f1f28', '#c98a3a', '#8c4a2f'];
+theme.drawCharacter = function (c, X, Y, s) {
+X = Math.round(X); Y = Math.round(Y);
+var fl = s.flip ? -1 : 1, A = s.color || '#4f9dff', O = P.outline;
+function r(x, y, w, h, col) { c.fillStyle = col; c.fillRect(fl > 0 ? X + x : X - x - w, Y + y, w, h); }
+var sit = s.pose === 'sit' || s.pose === 'sleep', bob = s.pose === 'walk' ? (s.frame % 2) : (s.act === 'cheer' ? -Math.abs(Math.round(Math.sin(s.t / 120) * 3)) : 0);
+var dy = (sit ? 4 : 0) + bob, back = s.back, human = s.kind === 'human';
+c.fillStyle = 'rgba(40,70,110,0.18)'; c.fillRect(X - 5, Y - 1, 10, 2); c.fillRect(X - 4, Y, 8, 1);
+if (!sit) { var l1 = s.pose === 'walk' && s.frame % 2 ? 1 : 0, l2 = s.pose === 'walk' && !(s.frame % 2) ? 1 : 0;
+r(-4, -6 + dy, 3, 6 - l1, O); r(1, -6 + dy, 3, 6 - l2, O); r(-3, -6 + dy, 1, 5 - l1, human ? '#4a5368' : P.white); r(2, -6 + dy, 1, 5 - l2, human ? '#4a5368' : P.white); }
+else { r(-4, -6 + dy - 1, 8, 3, O); r(-3, -6 + dy - 1, 6, 2, human ? '#4a5368' : P.shade); }
+var body = human ? A : P.white;
+r(-5, -14 + dy, 10, 9, O); r(-4, -13 + dy, 8, 7, body); r(-4, -7 + dy, 8, 1, human ? mix(A, '#000000', 0.2) : P.shade);
+if (!human && !back) { r(-1, -11 + dy, 2, 2, A); if (s.boss) { r(-3, -13 + dy, 1, 3, P.gold); r(2, -13 + dy, 1, 3, P.gold); } }
+if (human && !back) r(-1, -13 + dy, 2, 2, P.white);
+if (back && !human) r(-2, -12 + dy, 4, 4, P.shade);
+var t = s.t || 0, armL = 5, armR = 5, upR = false, upL = false;
+if (s.act === 'type') { armL = 3 + (Math.floor(t / 140) % 2); armR = 3 + (Math.floor(t / 140 + 1) % 2); }
+if (s.act === 'play') { armL = 3 + (Math.floor(t / 90) % 2); armR = 3 + (Math.floor(t / 110) % 2); }
+if (s.act === 'hand' && Math.floor(t / 1600) % 3 !== 2) upR = true;
+if (s.act === 'cheer') { upR = upL = true; }
+if (s.act === 'talk') armR = 4 + (Math.floor(t / 400) % 2);
+var skin = human ? '#f2c9a5' : P.shade;
+if (upL) { r(-7, -21 + dy, 3, 9, O); r(-6, -20 + dy, 1, 7, skin); } else { r(-7, -13 + dy, 3, armL + 1, O); r(-6, -12 + dy, 1, armL - 1, human ? A : P.shade); r(-6, -13 + dy + armL - 1, 1, 1, skin); }
+if (upR) { r(4, -21 + dy, 3, 9, O); r(5, -20 + dy, 1, 7, skin); } else { r(4, -13 + dy, 3, armR + 1, O); r(5, -12 + dy, 1, armR - 1, human ? A : P.shade); r(5, -13 + dy + armR - 1, 1, 1, skin); }
+if (s.act === 'cup') { r(-9, -10 + dy, 4, 4, O); r(-8, -9 + dy, 2, 2, P.white); r(-8, -10 + dy, 2, 1, '#8a5a35');
+if (Math.floor(t / 500) % 2) { r(-8, -13 + dy, 1, 1, '#ffffff'); r(-7, -15 + dy, 1, 1, '#ffffff'); } }
+if (s.act === 'read') { r(-4, -11 + dy, 8, 5, O); r(-3, -10 + dy, 3, 3, '#ffffff'); r(0, -10 + dy, 3, 3, '#f4f0e6'); }
+var hy = -24 + dy;
+if (human) {
+var hair = HAIR[s.hair % HAIR.length];
+r(-5, hy, 10, 10, O); r(-4, hy + 1, 8, 8, '#f2c9a5'); r(-5, hy - 1, 10, 4, hair); r(-5, hy + 2, 1, 4, hair); r(4, hy + 2, 1, 4, hair);
+if (back) r(-4, hy + 1, 8, 7, hair);
+else { var blink = Math.floor(t / 2900) % 7 === 0; r(-3, hy + 5, 1, blink ? 1 : 2, '#2a2230'); r(2, hy + 5, 1, blink ? 1 : 2, '#2a2230'); r(-1, hy + 8, 2, 1, '#d98f7a'); if (s.pose === 'sleep') { r(-3, hy + 5, 2, 1, '#2a2230'); r(2, hy + 5, 2, 1, '#2a2230'); } }
+} else {
+r(-7, hy, 14, 11, O); r(-6, hy + 1, 12, 9, P.white); r(-6, hy + 9, 12, 1, P.shade); r(-6, hy + 1, 2, 2, '#ffffff');
+if (!back) {
+r(-5, hy + 3, 10, 5, P.visor);
+var sleep = s.pose === 'sleep', bl = Math.floor(t / 3100) % 6 === 0;
+if (sleep) { r(-4, hy + 6, 3, 1, A); r(1, hy + 6, 3, 1, A); }
+else if (s.act === 'stuck') { r(-4, hy + 4, 1, 1, A); r(-2, hy + 6, 1, 1, A); r(-3, hy + 5, 1, 1, A); r(1, hy + 4, 1, 1, A); r(3, hy + 6, 1, 1, A); r(2, hy + 5, 1, 1, A); }
+else { r(-3, hy + 4, 2, bl ? 1 : 3, A); r(1, hy + 4, 2, bl ? 1 : 3, A); r(-3, hy + 4, 1, 1, '#ffffff'); r(1, hy + 4, 1, 1, '#ffffff'); }
+} else { r(0, hy + 2, 1, 7, P.shade); r(-2, hy + 5, 1, 2, A); }
+if (s.style % 2 === 0) { // headphones
+r(-6, hy - 2, 12, 2, O); r(-5, hy - 1, 10, 1, A); r(-9, hy + 3, 3, 6, O); r(-8, hy + 4, 1, 4, A); r(6, hy + 3, 3, 6, O); r(7, hy + 4, 1, 4, A);
+} else { // antenna + ear lights
+r(0, hy - 4, 1, 4, O); r(-1, hy - 6, 3, 3, O); r(0, hy - 5, 1, 1, A); r(-8, hy + 3, 2, 4, O); r(-8, hy + 4, 1, 2, A); r(6, hy + 3, 2, 4, O); r(7, hy + 4, 1, 2, A);
+}
+}
+if (s.boss) { r(-4, hy - 5, 9, 3, P.goldDark); r(-4, hy - 7, 1, 2, P.gold); r(0, hy - 8, 1, 3, P.gold); r(4, hy - 7, 1, 2, P.gold); r(-3, hy - 4, 7, 1, P.goldLight); }
+return { top: Y + hy - (s.boss ? 8 : 6) };
+};
+
+var ZG = [[1, 1, 1], [0, 1, 0], [1, 1, 1]];
+theme.drawFx = function (c, kind, x, y, t, o) {
+x = Math.round(x); y = Math.round(y); o = o || {};
+if (kind === 'bang') { var b = Math.floor(t / 300) % 2, by = y - 12 - b;
+R(c, x - 4, by - 10, 9, 11, P.outline); R(c, x - 3, by - 9, 7, 9, P.red); R(c, x - 4, by - 9, 1, 9, P.outline); R(c, x + 4, by - 9, 1, 9, P.outline);
+R(c, x - 1, by + 1, 3, 2, P.outline); R(c, x, by + 1, 1, 1, P.red); R(c, x, by - 8, 1, 5, '#ffffff'); R(c, x, by - 2, 1, 1, '#ffffff'); R(c, x - 3, by - 9, 1, 1, '#ff8a92'); }
+else if (kind === 'zzz') { for (var i = 0; i < 3; i++) { var ph = ((t / 1400) + i / 3) % 1, zx = x + 4 + Math.round(ph * 8), zy = y - 4 - Math.round(ph * 16); c.globalAlpha = 1 - ph;
+for (var a = 0; a < 3; a++) for (var bb = 0; bb < 3; bb++) if (ZG[a][bb] || (a === 1 && bb === (2 - 1))) R(c, zx + bb, zy + a, 1, 1, '#4f8fe0'); } c.globalAlpha = 1; }
+else if (kind === 'sweat') { var ph2 = (t / 900) % 1; R(c, x + 7, y + 2 + Math.round(ph2 * 8), 2, 3, '#5ab8ff'); R(c, x + 7, y + 2 + Math.round(ph2 * 8), 1, 1, '#ffffff'); }
+else if (kind === 'swirl') { for (var k = 0; k < 6; k++) { var an = t / 260 + k * 1.047; R(c, x + Math.round(Math.cos(an) * 6), y - 6 + Math.round(Math.sin(an) * 2.5), 2, 2, k % 2 ? '#ff8a3d' : '#ffc23d'); } }
+else if (kind === 'talk') { R(c, x - 6, y - 12, 13, 8, P.outline); R(c, x - 5, y - 11, 11, 6, '#ffffff'); R(c, x - 3, y - 4, 2, 2, P.outline);
+for (var d = 0; d < 3; d++) R(c, x - 3 + d * 3, y - 9, 2, 2, Math.floor(t / 300) % 3 === d ? (o.color || '#4f9dff') : '#c9d1dc'); }
+else if (kind === 'holo') { var hx = x - 7, hy = y - 14 - (Math.floor(t / 600) % 2); c.globalAlpha = 0.55; R(c, hx, hy, 14, 9, '#8fe8ff'); c.globalAlpha = 1;
+R(c, hx, hy, 14, 1, '#d6faff'); for (var q = 0; q < 3; q++) { var len = 3 + ((Math.floor(t / 200) + q * 5) % 8); R(c, hx + 2, hy + 2 + q * 2, len, 1, q === 1 ? (o.color || '#ffffff') : '#ffffff'); } }
+else if (kind === 'glowpulse') { var pa = 0.35 + 0.25 * Math.sin(t / 500); c.globalAlpha = pa; ring(c, x, y, 1.42, '#ffffff'); ring(c, x, y, 1.5, P.glow); c.globalAlpha = 1; }
+};
+theme.fireworkColors = ['#ff6a6a', '#ffd25a', '#4f9dff', '#46c49a', '#c08bff', '#ffffff', '#ff9f5a'];
+PO.themes = PO.themes || {}; PO.themes['default'] = theme;
+})(window.VisualOffice = window.VisualOffice || {});</script>
+<script>
+(function (PO) {
+var CFG = { walkSpeed: 2.6, idleDwell: [10, 22], deskDwell: [6, 12], cheerMs: 3600, maxScale: 10 };
+PO.ENGINE_CFG = CFG;
+var rnd = function (a, b) { return a + Math.random() * (b - a); };
+function hashN(s) { var h = 7; s = String(s); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+function Engine(canvas, layout, theme, hooks) {
+this.cv = canvas; this.ctx = canvas.getContext('2d'); this.L = layout; this.th = theme; this.hooks = hooks || {};
+var tw = theme.tile.w, th = theme.tile.h, M = 24;
+this.iso = new PO.Iso(tw, th, layout.rows * tw / 2 + M, theme.wallH + M);
+this.W = (layout.cols + layout.rows) * tw / 2 + M * 2;
+this.H = (layout.cols + layout.rows) * th / 2 + theme.wallH + theme.baseH + M * 2 + 40;
+this.buf = document.createElement('canvas'); this.bctx = this.buf.getContext('2d');
+this.cam = { x: 0, y: 0, P: 2 }; this.chars = {}; this.parts = []; this.sel = null; this.hover = null; this.meetingInfo = null;
+this.t0 = performance.now(); this.t = 0; this.particles = [];
+this._build(); this._bind(); this.resize(true);
+var self = this; (function loop() { self._frame(); requestAnimationFrame(loop); })();
+}
+var E = Engine.prototype;
+
+E._build = function () {
+var L = this.L, self = this;
+this.staticImg = this.th.buildStatic(L, this.iso, this.W, this.H);
+this.block = new Uint8Array(L.cols * L.rows);
+for (var y = 0; y < L.rows; y++) for (var x = 0; x < L.cols; x++) if (L.floor[y][x] === '.') this.block[y * L.cols + x] = 1;
+this.objects = L.objects.map(function (o) {
+var w = o.w || 1, h = o.h || 1;
+if (!o.seat) for (var yy = o.y; yy < o.y + h; yy++) for (var xx = o.x; xx < o.x + w; xx++) self.block[yy * L.cols + xx] = 1;
+var parts = self.th.sprites(o);
+var bx0 = o.x, bx1 = o.x + w, by0 = o.y, by1 = o.y + h;
+if (o.type === 'glass') { if (o.axis === 'y') { bx0 = o.x + 0.45; bx1 = o.x + 0.55; } else { by0 = o.y + 0.45; by1 = o.y + 0.55; } }
+parts.forEach(function (p) {
+var N = self.iso.toWorld(o.x, o.y);
+self.parts.push({ kind: 'obj', o: o, img: p.img, dx: Math.round(N.x - p.ax), dy: Math.round(N.y - p.ay), x0: bx0, x1: bx1, y0: by0, y1: by1,
+depth: (o.x + w - 0.5) + (o.y + h - 0.5) + (p.bias || 0), bias: p.bias || 0, screen: p.screen });
+});
+return o;
+});
+var Z = L.zones; this.deskAt = {};
+Z.desks.forEach(function (d) { self.deskAt[d.desk + ''] = d; self.deskAt[d.seat + ''] = d; });
+this.bossTiles = {}; (Z.boss.tiles || []).forEach(function (p) { self.bossTiles[p + ''] = 1; });
+L.objects.forEach(function (o) { if (o.type === 'boss_desk') for (var yy = o.y; yy < o.y + (o.h || 1); yy++) self.bossTiles[[o.x, yy] + ''] = 1; if (o.type === 'meeting_table') self.tableAt = o; });
+};
+E.walkable = function (x, y) { return x >= 0 && y >= 0 && x < this.L.cols && y < this.L.rows && !this.block[y * this.L.cols + x]; };
+
+E.setData = function (d, meeting) {
+var self = this, Z = this.L.zones, seen = {}, deskN = 0, used = {};
+this.meetingInfo = meeting;
+d.agents.forEach(function (a) { if (a.seat != null) used[a.seat] = 1; });
+var boss = d.agents.find(function (a) { return a.isBoss; });
+d.agents.forEach(function (a, i) {
+var c = self.chars[a.id];
+if (!c) {
+var home;
+if (boss && a.id === boss.id) home = { seat: Z.boss.seat, face: Z.boss.face, boss: true };
+else {
+var desk = a.seat != null ? Z.desks.find(function (x) { return x.id == a.seat; }) : null;
+if (!desk) { while (deskN < Z.desks.length && (used[Z.desks[deskN].id] || Object.values(self.chars).some(function (o) { return o.home.desk === Z.desks[deskN]; }))) deskN++; desk = Z.desks[deskN++]; }
+home = desk ? { seat: desk.seat, face: desk.face, desk: desk } : { seat: Z.idle_spots[i % Z.idle_spots.length].at, face: [1, 0] };
+}
+var h = hashN(a.id);
+c = self.chars[a.id] = { id: a.id, home: home, x: home.seat[0] + 0.5, y: home.seat[1] + 0.5, path: [], pose: 'sit', act: '', face: home.face, frame: 0, mode: null, style: h % 2, hair: h % 5, wait: 0 };
+}
+c.a = a; seen[a.id] = 1;
+});
+Object.keys(this.chars).forEach(function (id) { if (!seen[id]) delete self.chars[id]; });
+var mi = 0, pi = 0, qi = 0;
+Object.values(this.chars).forEach(function (c) {
+var a = c.a, m;
+c.hand = a.pending > 0 && a.status !== 'offline';
+if (c.home.boss) m = a.status === 'offline' ? 'boss_sleep' : 'boss';
+else if (a.status === 'offline') m = 'sleep';
+else if (a.status === 'stuck') m = 'stuck';
+else if (a.status === 'working') m = meeting && meeting.ids.indexOf(a.id) >= 0 ? 'meet' : 'work';
+else if (a.status === 'waiting_approval' || c.hand) m = 'ask';
+else m = 'idle';
+var slot = m === 'meet' ? Z.meeting.seats[mi++ % Z.meeting.seats.length] : m === 'sleep' ? Z.pods[pi++ % Z.pods.length] : m === 'ask' ? Z.approval_queue[qi++ % Z.approval_queue.length] : null;
+if (m !== c.mode || (slot && c.slot + '' !== slot + '')) { c.mode = m; c.slot = slot; self._plan(c); }
+});
+};
+E._goto = function (c, tile, then) {
+var sx = Math.floor(c.x), sy = Math.floor(c.y), self = this;
+var p = PO.findPath(this.L.cols, this.L.rows, function (x, y) { return self.walkable(x, y); }, sx, sy, tile[0], tile[1]);
+if (p && p.length && p[0][0] === sx && p[0][1] === sy) p.shift();
+if (!p || !p.length) { c.x = tile[0] + 0.5; c.y = tile[1] + 0.5; c.path = []; c.pose = 'stand'; then && then(); return; }
+c.path = p; c.onArrive = then; c.pose = 'walk'; c.act = c.hand ? 'hand' : '';
+};
+E._plan = function (c) {
+var self = this, Z = this.L.zones, m = c.mode; clearTimeout(c.timer); c.fx = null;
+var sitHome = function (act, fx) { self._goto(c, c.home.seat, function () { c.pose = 'sit'; c.face = c.home.face; c.act = act; c.fx = fx; }); };
+if (m === 'boss') sitHome(c.a.currentTask ? 'type' : '', null);
+else if (m === 'boss_sleep') sitHome('', 'zzz');
+else if (m === 'work') sitHome('type', 'holo');
+else if (m === 'stuck') sitHome('stuck', 'stuck');
+else if (m === 'meet') this._goto(c, c.slot, function () { c.pose = 'sit'; c.face = [c.slot[2], c.slot[3]]; c.act = 'talk'; c.fx = 'talk'; });
+else if (m === 'sleep') this._goto(c, c.slot, function () { c.pose = 'sleep'; c.face = [1, 0]; c.act = ''; c.fx = 'zzz'; });
+else if (m === 'ask') this._goto(c, c.slot, function () { c.pose = 'stand'; c.face = [-1, 0]; c.act = 'hand'; });
+else this._idle(c);
+};
+E._idle = function (c) {
+var self = this, Z = this.L.zones;
+if (c.mode !== 'idle') return;
+var taken = Object.values(this.chars).filter(function (o) { return o !== c && o.spot; }).map(function (o) { return o.spot.at + ''; });
+var free = Z.idle_spots.filter(function (s) { return taken.indexOf(s.at + '') < 0; });
+if (c.home.desk && (Math.random() < 0.25 || !free.length)) {
+c.spot = null;
+this._goto(c, c.home.seat, function () { c.pose = 'sit'; c.face = c.home.face; c.act = ''; c.timer = setTimeout(function () { self._idle(c); }, rnd.apply(null, CFG.deskDwell) * 1000); });
+return;
+}
+var s = free[Math.floor(Math.random() * free.length)]; c.spot = s;
+this._goto(c, s.at, function () {
+c.face = s.face || [1, 0];
+var k = s.kind; c.pose = (k === 'stool' || k === 'sofa') ? 'sit' : 'stand';
+c.act = k === 'coffee' || k === 'stool' ? 'cup' : k === 'arcade' ? 'play' : k === 'books' ? 'read' : '';
+c.timer = setTimeout(function () { c.spot = null; self._idle(c); }, rnd.apply(null, CFG.idleDwell) * 1000);
+});
+};
+E.celebrate = function (id) {
+var c = this.chars[id]; if (!c) return; c.cheer = this.t + CFG.cheerMs;
+var p = this.iso.toWorld(c.x, c.y), cols = this.th.fireworkColors, self = this;
+[0, 450, 900].forEach(function (delay, k) { setTimeout(function () {
+var cx = p.x + (k - 1) * 14, cy = p.y - 52 - k * 6;
+for (var i = 0; i < 26; i++) { var a = i / 26 * Math.PI * 2, v = 34 + Math.random() * 26; self.particles.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1.3 + Math.random() * 0.5, age: 0, col: cols[(i + k) % cols.length] }); }
+}, delay); });
+};
+
+E._update = function (dt) {
+var self = this;
+Object.values(this.chars).forEach(function (c) {
+if (c.path.length) {
+var n = c.path[0], tx = n[0] + 0.5, ty = n[1] + 0.5, dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy), step = CFG.walkSpeed * dt;
+if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) c.face = [Math.sign(Math.round(dx * 10)), Math.sign(Math.round(dy * 10))];
+if (d <= step) { c.x = tx; c.y = ty; c.path.shift(); if (!c.path.length) { var f = c.onArrive; c.onArrive = null; c.pose = 'stand'; f && f(); } }
+else { c.x += dx / d * step; c.y += dy / d * step; }
+c.frame = Math.floor(self.t / 160);
+}
+});
+this.particles = this.particles.filter(function (p) { p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 40 * dt; p.vx *= 0.985; return p.age < p.life; });
+};
+E._frame = function () {
+var now = performance.now(), dt = Math.min(0.05, (now - (this._last || now)) / 1000); this._last = now; this.t = now - this.t0;
+this._update(dt);
+var b = this.bctx, cam = this.cam, bw = this.buf.width, bh = this.buf.height, th = this.th, t = this.t, self = this;
+var cx = Math.round(cam.x), cy = Math.round(cam.y);
+b.setTransform(1, 0, 0, 1, 0, 0); b.imageSmoothingEnabled = false;
+th.drawSky(b, bw, bh, t, { x: cx, y: cy });
+b.setTransform(1, 0, 0, 1, -cx, -cy);
+b.drawImage(this.staticImg, 0, 0);
+if (th._bossCenter) th.drawFx(b, 'glowpulse', th._bossCenter.x, th._bossCenter.y, t);
+if (this.sel && this.sel.type === 'agent' && this.chars[this.sel.id]) { var sc = this.chars[this.sel.id], sp = this.iso.toWorld(Math.floor(sc.x), Math.floor(sc.y)); this._selDiamond(b, sp.x, sp.y); }
+var list = this.parts.slice();
+Object.values(this.chars).forEach(function (c) { list.push({ kind: 'char', c: c, x0: c.x - 0.2, x1: c.x + 0.2, y0: c.y - 0.2, y1: c.y + 0.2, depth: c.x + c.y + (c.pose === 'sit' && !c.path.length ? 0.5 : 0.01) }); });
+list.sort(function (a, b2) {
+if (a.x1 <= b2.x0 + 1e-6 || a.y1 <= b2.y0 + 1e-6) { if (!(b2.x1 <= a.x0 + 1e-6 || b2.y1 <= a.y0 + 1e-6)) return -1; }
+else if (b2.x1 <= a.x0 + 1e-6 || b2.y1 <= a.y0 + 1e-6) return 1;
+return a.depth - b2.depth;
+});
+var fxq = [];
+list.forEach(function (it) {
+if (it.kind === 'obj') { b.drawImage(it.img, it.dx, it.dy); return; }
+var c = it.c, p = self.iso.toWorld(c.x, c.y), py = p.y + (c.pose === 'sit' ? -2 : 0) + (c.pose === 'sleep' ? -5 : 0);
+var back = c.face[0] + c.face[1] < 0, scrDx = c.face[0] - c.face[1];
+var act = c.cheer && c.cheer > t ? 'cheer' : c.act;
+if (c.hand && act !== 'cheer' && (c.mode === 'work' || c.mode === 'stuck' || c.mode === 'boss') && Math.floor(t / 4000) % 2 === 0) act = 'hand';
+if (c.hand && c.mode === 'meet') act = Math.floor(t / 4000) % 2 ? 'hand' : 'talk';
+var r = th.drawCharacter(b, p.x, py, { kind: c.a.kind, color: c.a.color, pose: c.pose, act: act, back: back, flip: scrDx < 0, frame: c.frame, t: t + hashN(c.id) % 997, style: c.style, hair: c.hair, boss: c.home.boss });
+c.wx = p.x; c.wy = py; c.top = r.top;
+fxq.push(c);
+});
+fxq.forEach(function (c) {
+if (c.home.boss && c.act === 'type' && c.pose === 'sit') { var bc = self.th._bossCenter; th.drawFx(b, 'holo', c.wx + 14, c.wy - 30, t, { color: '#e2b24c' }); }
+if (c.fx === 'holo' && c.home.desk && c.pose === 'sit') { var d = c.home.desk.desk, hp = self.iso.toWorld(d[0] + 0.4, d[1] + 0.5); th.drawFx(b, 'holo', hp.x, hp.y - 26, t, { color: c.a.color }); }
+if (c.fx === 'stuck') { th.drawFx(b, 'swirl', c.wx, c.top - 2, t); th.drawFx(b, 'sweat', c.wx, c.top, t); }
+if (c.fx === 'zzz') th.drawFx(b, 'zzz', c.wx, c.top, t);
+if (c.fx === 'talk' && Math.floor((t + hashN(c.id)) / 2200) % 2 === 0) th.drawFx(b, 'talk', c.wx + 6, c.top, t, { color: c.a.color });
+if (c.hand) th.drawFx(b, 'bang', c.wx + 1, c.top, t);
+});
+this.particles.forEach(function (p) { b.globalAlpha = Math.max(0, 1 - p.age / p.life); b.fillStyle = p.col; b.fillRect(Math.round(p.x), Math.round(p.y), 2, 2); });
+b.globalAlpha = 1;
+th.drawForeground(b, t, { w: this.W, h: this.H });
+var x = this.ctx; x.setTransform(1, 0, 0, 1, 0, 0); x.imageSmoothingEnabled = false;
+x.drawImage(this.buf, 0, 0, bw * cam.P, bh * cam.P);
+this._labels(x, cx, cy);
+};
+E._selDiamond = function (b, x, y) { var col = '#ffcf4a', TWh = this.th.tile.w / 2, THh = this.th.tile.h / 2;
+var h = this.th.helpers; h.line(b, x, y - 1, x + TWh + 1, y + THh, col); h.line(b, x + TWh + 1, y + THh, x, y + 2 * THh + 1, col); h.line(b, x, y + 2 * THh + 1, x - TWh - 1, y + THh, col); h.line(b, x - TWh - 1, y + THh, x, y - 1, col); };
+
+E._labels = function (x, cx, cy) {
+var P = this.cam.P, dpr = this.dpr, scale = P / dpr, self = this, placed = [], i18n = PO.i18n;
+var fs = Math.round(11 * dpr), fs2 = Math.round(10 * dpr), showTask = scale >= 1.6;
+var cs = Object.values(this.chars).filter(function (c) { return c.wx != null; });
+var pri = function (c) { return (self.sel && self.sel.id === c.id ? 100 : 0) + (c.home.boss ? 50 : 0) + (c.hand ? 20 : 0) + (c.mode === 'work' || c.mode === 'stuck' ? 10 : 0); };
+cs.sort(function (a, b) { return pri(b) - pri(a); });
+x.textBaseline = 'middle';
+cs.forEach(function (c) {
+var a = c.a, selected = self.sel && self.sel.id === c.id;
+var lines = [a.name + (c.hand ? '  ❗' + a.pending : '')];
+var task = a.currentTask && (c.mode === 'work' || c.mode === 'stuck' || c.mode === 'meet' || c.mode === 'boss') ? a.currentTask : '';
+if (task && (showTask || selected)) { var ch = Array.from(task); lines.push((c.mode === 'stuck' ? '🌀 ' : '⌨ ') + (ch.length > 14 ? ch.slice(0, 14).join('') + '…' : task)); }
+x.font = '600 ' + fs + 'px system-ui,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif';
+var w1 = x.measureText(lines[0]).width; x.font = fs2 + 'px system-ui,"PingFang SC","Noto Sans CJK SC",sans-serif'; var w2 = lines[1] ? x.measureText(lines[1]).width : 0;
+var pad = 5 * dpr, w = Math.max(w1 + 10 * dpr, w2) + pad * 2, h = (lines.length > 1 ? 30 : 17) * dpr;
+var sx = Math.round((c.wx - cx) * P - w / 2), sy = Math.round((c.top - cy - (c.hand ? 16 : 3)) * P - h);
+var tries = 0, ov = function () { return placed.some(function (r) { return sx < r[0] + r[2] && sx + w > r[0] && sy < r[1] + r[3] && sy + h > r[1]; }); };
+while (ov() && tries < 3) { sy -= h * 0.55; tries++; }
+if (ov() && !selected) { lines = [lines[0]]; }
+if (ov() && !selected && tries >= 3) return;
+placed.push([sx, sy, w, h]);
+x.globalAlpha = 0.95; x.fillStyle = selected ? '#fffaf0' : '#ffffff'; rr(x, sx, sy, w, h, 6 * dpr); x.fill();
+x.lineWidth = Math.max(1, dpr); x.strokeStyle = selected ? '#e2b24c' : c.hand ? '#ff8a92' : 'rgba(80,110,150,.35)'; x.stroke(); x.globalAlpha = 1;
+x.fillStyle = STATUS_COL[c.mode] || '#8aa'; x.beginPath(); x.arc(sx + pad + 3 * dpr, sy + 8.5 * dpr, 3.2 * dpr, 0, 7); x.fill();
+x.font = '600 ' + fs + 'px system-ui,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif'; x.fillStyle = '#25324a'; x.fillText(lines[0], sx + pad + 10 * dpr, sy + 9 * dpr);
+if (lines[1]) { x.font = fs2 + 'px system-ui,"PingFang SC","Noto Sans CJK SC",sans-serif'; x.fillStyle = c.mode === 'stuck' ? '#c4521c' : '#3a6fb0'; x.fillText(lines[1], sx + pad, sy + 22 * dpr); }
+});
+var m = this.meetingInfo;
+if (m && this.tableAt) { var tp = this.iso.toWorld(this.tableAt.x + 1.5, this.tableAt.y + 1), txt = i18n.t('meetingOn', { p: m.name });
+x.font = '600 ' + fs + 'px system-ui,"PingFang SC",sans-serif'; var tw = x.measureText(txt).width + 14 * dpr, tx = Math.round((tp.x - cx) * P - tw / 2), ty = Math.round((tp.y - cy - 60) * P);
+if (!placed.some(function (r) { return tx < r[0] + r[2] && tx + tw > r[0] && ty < r[1] + r[3] && ty + 18 * dpr > r[1]; })) {
+x.fillStyle = 'rgba(247,242,255,.95)'; rr(x, tx, ty, tw, 18 * dpr, 9 * dpr); x.fill(); x.strokeStyle = '#c9b3f2'; x.stroke(); x.fillStyle = '#6a45b8'; x.fillText(txt, tx + 7 * dpr, ty + 9.5 * dpr); } }
+};
+var STATUS_COL = { work: '#2fb36b', boss: '#e2b24c', boss_sleep: '#9aa6b8', meet: '#8a5cf0', stuck: '#ff7a2f', ask: '#ff3b47', idle: '#4fa3ff', sleep: '#9aa6b8' };
+function rr(x, a, b, w, h, r) { x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+
+E.resize = function (fit) {
+var r = this.cv.getBoundingClientRect(), dpr = this.dpr = Math.max(1, window.devicePixelRatio || 1);
+this.cv.width = Math.round(r.width * dpr); this.cv.height = Math.round(r.height * dpr);
+if (fit || !this._fitDone) this.fit(); else this._resizeBuf();
+};
+E._resizeBuf = function () { this.buf.width = Math.ceil(this.cv.width / this.cam.P) + 1; this.buf.height = Math.ceil(this.cv.height / this.cam.P) + 1; this.bctx.imageSmoothingEnabled = false; };
+E.fit = function () {
+var dw = this.cv.width, dh = this.cv.height, cw = this.W - 30, ch = this.H - 40;
+var fitP = Math.floor(Math.min(dw / cw, dh / ch)), minP = Math.max(1, Math.round(this.dpr * 0.9));
+this.cam.P = Math.min(CFG.maxScale * this.dpr, Math.max(fitP, minP)); this._resizeBuf(); this._fitDone = true;
+var bw = dw / this.cam.P, bh = dh / this.cam.P, ctr = this.th._bossCenter || { x: this.W / 2, y: this.H / 2 };
+var fitsW = bw >= cw; this.cam.x = fitsW ? (this.W - bw) / 2 : ctr.x - bw / 2; this.cam.y = bh >= ch ? (this.H - bh) / 2 - 4 : ctr.y - bh / 2;
+};
+E.zoomAt = function (dir, dx, dy) {
+var P0 = this.cam.P, minP = Math.max(1, Math.floor(this.dpr / 2)), P1 = Math.max(minP, Math.min(CFG.maxScale * this.dpr, P0 + dir));
+if (P1 === P0) return; var wx = this.cam.x + dx / P0, wy = this.cam.y + dy / P0;
+this.cam.P = P1; this.cam.x = wx - dx / P1; this.cam.y = wy - dy / P1; this._resizeBuf(); this._clamp();
+};
+E._clamp = function () { var bw = this.buf.width, bh = this.buf.height; this.cam.x = Math.max(-bw * 0.6, Math.min(this.W - bw * 0.4, this.cam.x)); this.cam.y = Math.max(-bh * 0.6, Math.min(this.H - bh * 0.4, this.cam.y)); };
+
+E._bind = function () {
+var self = this, cv = this.cv, ptrs = {}, start = null, pinch = null;
+var dev = function (e) { var r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * self.dpr, (e.clientY - r.top) * self.dpr]; };
+cv.addEventListener('pointerdown', function (e) { cv.setPointerCapture(e.pointerId); ptrs[e.pointerId] = dev(e);
+var ks = Object.keys(ptrs); if (ks.length === 1) start = { p: dev(e), cam: [self.cam.x, self.cam.y], moved: false };
+if (ks.length === 2) { var a = ptrs[ks[0]], b = ptrs[ks[1]]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) }; start && (start.moved = true); } });
+cv.addEventListener('pointermove', function (e) {
+if (!ptrs[e.pointerId]) { var h = self.hit(dev(e)); cv.style.cursor = h ? 'pointer' : 'grab'; return; }
+ptrs[e.pointerId] = dev(e); var ks = Object.keys(ptrs);
+if (ks.length === 2 && pinch) { var a = ptrs[ks[0]], b = ptrs[ks[1]], d = Math.hypot(a[0] - b[0], a[1] - b[1]), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+if (d / pinch.d > 1.35) { self.zoomAt(1, mx, my); pinch.d = d; } else if (d / pinch.d < 0.74) { self.zoomAt(-1, mx, my); pinch.d = d; } return; }
+if (start && ks.length === 1) { var p = dev(e), dx = p[0] - start.p[0], dy = p[1] - start.p[1];
+if (Math.abs(dx) + Math.abs(dy) > 8 * self.dpr) start.moved = true;
+if (start.moved) { self.cam.x = start.cam[0] - dx / self.cam.P; self.cam.y = start.cam[1] - dy / self.cam.P; self._clamp(); cv.style.cursor = 'grabbing'; } }
+});
+var up = function (e) { var was = ptrs[e.pointerId]; delete ptrs[e.pointerId]; var ks = Object.keys(ptrs);
+if (ks.length < 2) pinch = null;
+if (!ks.length && start && !start.moved && was && e.type === 'pointerup') { var h = self.hit(dev(e)); self.select(h); self.hooks.onSelect && self.hooks.onSelect(h); }
+if (!ks.length) start = null; else start = { p: ptrs[ks[0]], cam: [self.cam.x, self.cam.y], moved: true }; };
+cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+var wheelAcc = 0;
+cv.addEventListener('wheel', function (e) { e.preventDefault(); wheelAcc += e.deltaY; if (Math.abs(wheelAcc) < 60) return; var p = dev(e); self.zoomAt(wheelAcc < 0 ? 1 : -1, p[0], p[1]); wheelAcc = 0; }, { passive: false });
+window.addEventListener('resize', function () { self.resize(false); });
+};
+E.select = function (h) { this.sel = h && h.type === 'agent' ? h : null; };
+
+E.hit = function (p) {
+var wx = this.cam.x + p[0] / this.cam.P, wy = this.cam.y + p[1] / this.cam.P, best = null;
+Object.values(this.chars).forEach(function (c) { if (c.wx == null) return;
+if (wx >= c.wx - 9 && wx <= c.wx + 9 && wy >= c.top - 4 && wy <= c.wy + 2) { var dep = c.x + c.y; if (!best || dep > best.d) best = { d: dep, id: c.id }; } });
+if (best) return { type: 'agent', id: best.id };
+var t = this.iso.toTile(wx, wy), tx = Math.floor(t.x), ty = Math.floor(t.y), key = [tx, ty] + '', self = this;
+var keys = [key, [tx - 1, ty - 1] + ''];
+for (var i = 0; i < keys.length; i++) {
+var d = this.deskAt[keys[i]];
+if (d) { var owner = Object.values(this.chars).find(function (c) { return c.home.desk === d; }); return owner ? { type: 'agent', id: owner.id } : { type: 'desk', desk: d.id }; }
+if (this.bossTiles[keys[i]]) { var bo = Object.values(this.chars).find(function (c) { return c.home.boss; }); if (bo) return { type: 'agent', id: bo.id }; }
+var tb = this.tableAt, k = keys[i].split(',').map(Number);
+if (tb && k[0] >= tb.x && k[0] < tb.x + tb.w && k[1] >= tb.y && k[1] < tb.y + tb.h) return { type: 'team' };
+}
+return null;
+};
+E.charScreen = function (id) { var c = this.chars[id]; if (!c || c.wx == null) return null; return { x: (c.wx - this.cam.x) * this.cam.P / this.dpr, y: (c.top - this.cam.y) * this.cam.P / this.dpr }; };
+PO.Engine = Engine;
+})(window.VisualOffice = window.VisualOffice || {});</script>
+<script>
+(function (PO) {
+var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+PO.replies = {
+http: function (o) {
+var srv = null, local = {}, subs = [], LK = 'gvo.replies';
+try { local = JSON.parse(localStorage.getItem(LK) || '{}'); } catch (e) {}
+var save = function () { try { localStorage.setItem(LK, JSON.stringify(local)); } catch (e) {} };
+var emit = function () { subs.forEach(function (f) { try { f(); } catch (e) {} }); };
+var cred = o.credentials || 'same-origin', H = Object.assign({ 'Content-Type': 'application/json' }, o.headers || {});
+async function post(x) {
+try { var r = await fetch(o.post, { method: 'POST', credentials: cred, headers: H, body: JSON.stringify(x.body) });
+x.state = r.ok ? 'answered' : r.status >= 400 && r.status < 500 ? 'failed' : 'sending'; } catch (e) { x.state = 'sending'; }
+save(); emit();
+}
+async function sync() {
+for (var k in local) if (local[k].state === 'sending') await post(local[k]);
+if (!o.list) return;
+try { var r = await fetch(o.list + (o.list.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now(), { credentials: cred, headers: o.headers || {}, cache: 'no-store' });
+if (!r.ok) return; var j = await r.json(), m = {};
+(j.items || []).forEach(function (s) { if (s && s.confirmId != null) m[s.confirmId] = { state: s.status === 'new' ? 'answered' : s.status || 'answered', text: s.text }; });
+srv = m; for (var k2 in local) if (local[k2].state !== 'sending' && local[k2].state !== 'failed') delete local[k2]; save(); emit();
+} catch (e) {}
+}
+document.addEventListener('click', function (ev) {
+var b = ev.target.closest && ev.target.closest('[data-rsend]'); if (!b) return; ev.preventDefault();
+var el = b.closest('.rbox'), ta = el.querySelector('textarea'), d = el.dataset, T = PO.i18n.t;
+var x = local[d.cid] = { state: 'sending', body: { agentId: d.ag, taskId: d.tid, task: d.tk, confirmId: d.cid, question: d.q, text: (ta.value || '').trim() || T('agree') } };
+ta.value = ''; b.disabled = true; save(); emit(); post(x);
+});
+return {
+sync: sync, onChange: function (f) { subs.push(f); },
+status: function (a, t, c) { var l = local[c.id]; if (l && (l.state === 'sending' || l.state === 'failed')) return { state: l.state }; return (srv && srv[c.id]) || (l ? { state: l.state } : null); },
+busy: function () { var e = document.activeElement; return !!(e && e.closest && e.closest('.rbox')) || [].some.call(document.querySelectorAll('.rbox textarea'), function (t) { return t.value.trim(); }); },
+box: function (a, t, c) { var T = PO.i18n.t;
+return '<div class="rbox" data-cid="' + esc(c.id) + '" data-ag="' + esc(a.id) + '" data-tid="' + esc(t.id) + '" data-tk="' + esc(t.title) + '" data-q="' + esc(c.question) + '"><textarea rows="1" placeholder="' + esc(T('replyPh')) + '"></textarea>' +
+'<div class="rr"><button data-rsend>' + esc(T('send')) + '</button></div></div>'; }
+};
+}
+};
+})(window.VisualOffice = window.VisualOffice || {});</script>
+<script>
+(function (PO) {
+var $ = function (id) { return document.getElementById(id); };
+var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+var t = function (k, v) { return PO.i18n.t(k, v); };
+var pad = function (n) { return String(n).padStart(2, '0'); };
+function fmt(iso) { if (!iso) return ''; var d = new Date(iso); if (isNaN(d)) return ''; var n = new Date(), today = d.toDateString() === n.toDateString();
+return (today ? (PO.i18n.lang === 'zh' ? '今天 ' : 'Today ') : pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ') + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+var UI = PO.ui = { state: { sel: null, tab: null, more: 30 }, fmt: fmt, esc: esc };
+UI.modeOf = function (a, meeting) {
+if (a.isBoss && a.status !== 'offline') return 'boss';
+if (a.status === 'working' && meeting && meeting.ids.indexOf(a.id) >= 0) return 'meeting';
+return a.status;
+};
+UI.renderStatic = function () {
+document.documentElement.lang = PO.i18n.lang === 'zh' ? 'zh-CN' : 'en';
+$('b-team').textContent = '👥 ' + t('team'); $('b-refresh').textContent = '⟳ ' + t('refresh'); $('b-fit').textContent = '⤢ ' + t('fit'); $('b-lang').textContent = t('lang');
+$('hint').textContent = t('hint');
+var L = (PO.app && PO.app.cfg.links) || [], el = $('links');
+if (el) el.innerHTML = L.map(function (l) { return '<a href="' + esc(l.href) + '">' + esc(l.label) + '</a>'; }).join('');
+};
+UI.renderTop = function (d, meeting, src) {
+$('title').textContent = (d.office && d.office.name) || t('title');
+var c = { working: 0, meeting: 0, waiting: 0, stuck: 0, idle: 0, offline: 0 };
+d.agents.forEach(function (a) { var m = UI.modeOf(a, meeting);
+if (m === 'meeting') c.meeting++; else if (m === 'working' || m === 'boss' && a.currentTask) c.working++; else if (m === 'stuck') c.stuck++; else if (m === 'offline') c.offline++; else if (m !== 'waiting_approval') c.idle++;
+if (a.pending && a.status !== 'offline' || a.status === 'waiting_approval') c.waiting++; });
+var chips = [['working', '⌨'], ['meeting', '👥'], ['waiting', '❗'], ['stuck', '🌀'], ['idle', '☕'], ['offline', '🔋']];
+$('counts').innerHTML = chips.map(function (k) { return '<span class="chip c-' + k[0] + '" title="' + esc(t('c_' + k[0])) + '">' + k[1] + ' <span class="cl">' + esc(t('c_' + k[0])) + '</span> <b>' + c[k[0]] + '</b></span>'; }).join('');
+var label = src.source === 'live' ? t('live') : src.source === 'snapshot' ? t('snapshot') : t('sample');
+$('stamp').innerHTML = '<i class="dot ' + esc(src.source) + '"></i>' + esc(label) + (d.office && d.office.updatedAt ? ' · ' + esc(t('updated')) + ' ' + esc(fmt(d.office.updatedAt)) : '');
+};
+function badge(mode) { return '<span class="badge m-' + esc(mode) + '">' + esc(t('st_' + mode)) + '</span>'; }
+function taskItem(a, x, team) {
+var subs = x.subtasks || [], sd = subs.filter(function (s) { return s.status === 'done'; }).length;
+var times = [x.startedAt ? t('started') + ' ' + fmt(x.startedAt) : '', x.updatedAt && x.status !== 'done' ? t('last') + ' ' + fmt(x.updatedAt) : '', x.doneAt ? t('finished') + ' ' + fmt(x.doneAt) : ''].filter(Boolean).join(' · ');
+var prog = x.progress != null ? Math.round(x.progress * 100) : null;
+return '<div class="it">' + (team ? '<span class="agt" style="--c:' + esc(a.color || '#89a') + '">' + esc(a.name) + '</span>' : '') + '<div class="tn">' + esc(x.title) + '</div>' +
+'<div class="meta"><span class="pill s-' + esc(x.status) + '">' + esc(t('ts_' + x.status)) + '</span>' + (x.projectName || x.project ? '<span>📁 ' + esc(x.projectName || x.project) + '</span>' : '') + '<span>' + esc(times) + '</span></div>' +
+(prog != null && x.status !== 'done' ? '<div class="bar" title="' + esc(t('progress')) + ' ' + prog + '%"><i style="width:' + prog + '%"></i></div>' : '') +
+(x.note ? '<div class="nt">' + esc(x.note) + '</div>' : '') +
+(subs.length ? '<details class="subs"><summary>' + esc(t('subtasks')) + ' ' + sd + '/' + subs.length + '</summary>' + subs.map(function (s) { return '<div>' + ({ done: '✅', stuck: '🌀', running: '⏳' }[s.status] || '▫️') + ' ' + esc(s.title) + '</div>'; }).join('') + '</details>' : '') + '</div>';
+}
+UI.open = function (sel) { UI.state.sel = sel; UI.state.tab = null; UI.state.more = 30; UI.renderPanel(); $('panel').classList.toggle('open', !!sel); };
+UI.close = function () { UI.state.sel = null; $('panel').classList.remove('open'); PO.app && PO.app.engine.select(null); };
+UI.renderPanel = function () {
+var sel = UI.state.sel, app = PO.app; if (!sel || !app) return; var d = app.data, meeting = app.meeting, team = sel.type === 'team', agents;
+var head = $('p-head');
+if (sel.type === 'desk') {
+head.innerHTML = '<div class="av">🪑</div><div class="hd"><div class="nm">' + esc(t('emptyDesk', { n: sel.desk })) + '</div></div><button class="x" aria-label="close">✕</button>';
+$('p-tabs').innerHTML = ''; $('p-body').innerHTML = '<div class="emp">' + esc(t('emptyDeskTip')) + '</div>'; bindClose(); return;
+}
+if (team) { agents = d.agents; var run = 0, pc = 0; agents.forEach(function (a) { a.tasks.forEach(function (x) { if (x.status === 'running' || x.status === 'stuck') run++; }); pc += a.pending; });
+head.innerHTML = '<div class="av">🏢</div><div class="hd"><div class="nm">' + esc(t('team')) + ' · ' + esc(t('agents', { n: agents.length })) + '</div><div class="sub">' + esc(t('teamSub', { r: run, c: pc })) + '</div></div><button class="x" aria-label="close">✕</button>'; }
+else { var a = d.agents.find(function (x) { return x.id === sel.id; }); if (!a) { UI.close(); return; } agents = [a];
+var ch = app.engine.chars[a.id], where = ch && ch.home.boss ? t('bossDesk') : ch && ch.home.desk ? t('desk', { n: ch.home.desk.id }) : '';
+head.innerHTML = '<canvas class="av" width="24" height="32" id="p-av"></canvas><div class="hd"><div class="nm">' + esc(a.name) + ' ' + badge(UI.modeOf(a, meeting)) + '</div><div class="sub">' +
+esc([a.role, a.kind === 'human' ? t('human') : t('ai'), where, a.lastActive ? t('lastActive') + ' ' + fmt(a.lastActive) : ''].filter(Boolean).join(' · ')) + '</div></div><button class="x" aria-label="close">✕</button>';
+var av = $('p-av'), cx = av.getContext('2d'); cx.imageSmoothingEnabled = false;
+app.theme.drawCharacter(cx, 12, 30, { kind: a.kind, color: a.color, pose: 'stand', act: a.pending ? 'hand' : '', frame: 0, t: 0, style: ch ? ch.style : 0, hair: ch ? ch.hair : 0, boss: a.isBoss });
+}
+var now = [], done = [], conf = [], ans = [], cls = [], R = app.replies;
+agents.forEach(function (a) { a.tasks.forEach(function (x) {
+if (x.status === 'running' || x.status === 'stuck' || x.status === 'queued') now.push([a, x]); else if (x.status === 'done') done.push([a, x]);
+(x.confirms || []).forEach(function (c) { if (c.closed) cls.push([a, x, c]); else if (c.status === 'pending') conf.push([a, x, c]); else if (c.status === 'answered' && c.baseStatus === 'pending') ans.push([a, x, c]); }); }); });
+var ord = { stuck: 0, running: 1, queued: 2 }, ts = function (v) { return v ? Date.parse(v) : 0; };
+now.sort(function (p, q) { return ord[p[1].status] - ord[q[1].status] || ts(q[1].updatedAt) - ts(p[1].updatedAt); });
+done.sort(function (p, q) { return ts(q[1].doneAt || q[1].updatedAt) - ts(p[1].doneAt || p[1].updatedAt); });
+var tab = UI.state.tab || (conf.length && !team ? 'conf' : 'now'); UI.state.tab = tab;
+$('p-tabs').innerHTML = [['now', t('now'), now.length], ['done', t('done'), done.length], ['conf', t('confirm'), conf.length]].map(function (k) {
+return '<button data-tab="' + k[0] + '" class="' + (tab === k[0] ? 'on' : '') + '">' + esc(k[1]) + '<i class="' + (k[0] === 'conf' && k[2] ? 'red' : '') + '">' + k[2] + '</i></button>'; }).join('');
+var h = '';
+if (tab === 'now') h = now.length ? now.map(function (p) { return taskItem(p[0], p[1], team); }).join('') : '<div class="emp">' + esc(t('nothingNow')) + '</div>';
+else if (tab === 'done') h = done.length ? done.slice(0, UI.state.more).map(function (p) { return taskItem(p[0], p[1], team); }).join('') + (done.length > UI.state.more ? '<button class="more">' + esc(t('more', { n: Math.min(30, done.length - UI.state.more) })) + '</button>' : '') : '<div class="emp">' + esc(t('nothingDone')) + '</div>';
+else {
+var qItem = function (p, i, list, pre) { var same = i > 0 && list[i - 1][1] === p[1], c = p[2], r = c.reply;
+return (same ? '' : (i ? '</div>' : '') + '<div class="it q">' + (team ? '<span class="agt" style="--c:' + esc(p[0].color || '#89a') + '">' + esc(p[0].name) + '</span>' : '') + '<div class="tn">' + esc(p[1].title) + '</div>') +
+'<div class="qq">❓ ' + esc(c.question) + (r ? ' <span class="rflag r-' + esc(r.state) + '">' + esc(r.label || t('rs_' + r.state)) + '</span>' : '') +
+(R && R.box ? R.box(p[0], p[1], c) : app.cfg.onConfirm ? '<br><button class="ans" data-k="' + pre + i + '">' + esc(t('answer')) + '</button>' : '') + '</div>'; };
+h = conf.length ? conf.map(function (p, i) { return qItem(p, i, conf, 'p'); }).join('') + '</div>' : '<div class="emp">' + esc(t('nothingConfirm')) + '</div>';
+if (cls.length) h += '<details class="answered closedq"' + (UI.state.clsOpen ? ' open' : '') + '><summary>' + esc(t('closedN', { n: cls.length })) + '</summary>' + cls.map(function (p, i) { return qItem(p, i, cls, 'c'); }).join('') + '</div></details>';
+if (ans.length) h += '<details class="answered"' + (UI.state.ansOpen ? ' open' : '') + '><summary>✓ ' + esc(t('answeredN', { n: ans.length })) + '</summary>' + ans.map(function (p, i) { return qItem(p, i, ans, 'a'); }).join('') + '</div></details>';
+}
+var body = $('p-body'), keep = UI.state.lastKey === sel.type + sel.id + tab ? body.scrollTop : 0; UI.state.lastKey = sel.type + sel.id + tab;
+body.innerHTML = h; body.scrollTop = keep;
+body.querySelectorAll('details.answered').forEach(function (det) { det.ontoggle = function () { UI.state[det.classList.contains('closedq') ? 'clsOpen' : 'ansOpen'] = det.open; }; });
+$('p-tabs').querySelectorAll('button').forEach(function (b) { b.onclick = function () { UI.state.tab = b.dataset.tab; UI.renderPanel(); }; });
+var more = $('p-body').querySelector('.more'); if (more) more.onclick = function () { UI.state.more += 30; UI.renderPanel(); };
+$('p-body').querySelectorAll('.ans').forEach(function (b) { b.onclick = function () { var k = b.dataset.k, p = ({ p: conf, a: ans, c: cls })[k[0]][+k.slice(1)]; app.cfg.onConfirm(p[0], p[1], p[2]); }; });
+bindClose();
+};
+function bindClose() { var x = $('p-head').querySelector('.x'); if (x) x.onclick = UI.close; }
+var tt = 0; UI.toast = function (m) { var e = $('toast'); e.textContent = m; e.classList.add('on'); clearTimeout(tt); tt = setTimeout(function () { e.classList.remove('on'); }, 4200); };
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') UI.close(); });
+})(window.VisualOffice = window.VisualOffice || {});</script>
+<script>
+(function (PO) {
+var q = new URLSearchParams(location.search), base = window.VISUAL_OFFICE_CONFIG || {};
+var cfg = Object.assign({ refreshSec: 60, adapter: 'auto', theme: 'default', layout: 'layouts/default.json' }, base);
+if (q.get('data')) cfg.data = q.get('data');
+if (q.get('adapter')) cfg.adapter = q.get('adapter') === 'none' ? null : q.get('adapter');
+if (q.get('refresh')) cfg.refreshSec = Math.max(10, +q.get('refresh') || 60);
+var saved = null; try { saved = localStorage.getItem('gvo.lang'); } catch (e) {}
+PO.i18n.set(q.get('lang') || saved || cfg.lang || 'zh');
+async function boot() {
+var layout = PO.data.readInline('po-layout');
+if (!layout) layout = await PO.data.getJSON(cfg.layout);
+var theme = PO.themes[cfg.theme] || PO.themes['default'];
+Object.keys(theme.css || {}).forEach(function (k) { document.documentElement.style.setProperty(k, theme.css[k]); });
+var R = cfg.replies && cfg.replies.type === 'http' ? PO.replies.http(cfg.replies) : cfg.replies || null;
+var app = PO.app = { cfg: cfg, theme: theme, data: null, src: null, meeting: null, replies: R };
+var busy = function () { try { return !!(R && R.busy && R.busy()); } catch (e) { return false; } };
+
+function reapply() {
+if (!app.data) return; PO.data.applyReplies(app.data, R);
+app.meeting = PO.data.meeting(app.data, Date.now()); app.engine.setData(app.data, app.meeting); PO.ui.renderTop(app.data, app.meeting, app.src);
+if (PO.ui.state.sel && !busy()) PO.ui.renderPanel(); else app.dirty = true;
+}
+app.reapply = reapply;
+if (R && R.onChange) R.onChange(reapply);
+document.addEventListener('focusout', function () { setTimeout(function () { if (app.dirty && !busy()) { app.dirty = false; if (PO.ui.state.sel) PO.ui.renderPanel(); } }, 300); });
+app.engine = new PO.Engine(document.getElementById('stage'), layout, theme, {
+onSelect: function (h) { if (h) PO.ui.open(h); else PO.ui.close(); }
+});
+PO.ui.renderStatic();
+async function refresh(manual) {
+var r = await PO.data.load(cfg, app.src && app.src.source !== 'sample' ? app.src : null);
+if (R && R.sync) { try { await R.sync(); } catch (e) {} }
+app.src = r; app.data = PO.data.applyReplies(r.data, R); var now = Date.now();
+app.meeting = PO.data.meeting(r.data, now);
+app.engine.setData(r.data, app.meeting);
+PO.ui.renderTop(r.data, app.meeting, r);
+if (PO.ui.state.sel && !busy()) PO.ui.renderPanel(); else if (PO.ui.state.sel) app.dirty = true;
+PO.data.fireworks(r.data, now).slice(0, 4).forEach(function (f, i) {
+setTimeout(function () { app.engine.celebrate(f.agent.id); PO.ui.toast(PO.i18n.t('firework', { a: f.agent.name, t: f.task.title || '' })); }, 900 + i * 1800);
+});
+if (r.error && manual) PO.ui.toast(PO.i18n.t('loadFail', { s: PO.i18n.t(r.source === 'sample' ? 'sample' : r.source === 'snapshot' ? 'snapshot' : 'live') }));
+}
+app.refresh = refresh;
+await refresh();
+setInterval(refresh, cfg.refreshSec * 1000);
+document.addEventListener('visibilitychange', function () { if (!document.hidden) refresh(); });
+var B = function (id, f) { document.getElementById(id).onclick = f; };
+B('b-team', function () { PO.ui.open({ type: 'team' }); app.engine.select(null); });
+B('b-refresh', function () { refresh(true); });
+B('b-fit', function () { app.engine.fit(); });
+B('b-in', function () { var c = app.engine.cv; app.engine.zoomAt(1, c.width / 2, c.height / 2); });
+B('b-out', function () { var c = app.engine.cv; app.engine.zoomAt(-1, c.width / 2, c.height / 2); });
+B('b-lang', function () { PO.i18n.set(PO.i18n.lang === 'zh' ? 'en' : 'zh'); PO.ui.renderStatic(); PO.ui.renderTop(app.data, app.meeting, app.src); PO.ui.renderPanel(); });
+setTimeout(function () { document.getElementById('hint').classList.add('off'); }, 7000);
+window.__visualOfficeReady = true;
+}
+boot().catch(function (e) { console.error(e); document.getElementById('hint').textContent = 'Error: ' + e.message; });
+})(window.VisualOffice = window.VisualOffice || {});</script>
+</body>
+</html>

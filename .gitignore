@@ -1,0 +1,17 @@
+# Real data, real screenshots and private bundles never leave this folder
+.local/
+*.real.*
+# Build output: only the public demo bundle (fictional sample data) is tracked
+dist/*
+!dist/grokbot-visual-office.html
+# Python / OS / editor noise
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+node_modules/
+*.log
+.env
+.env.*

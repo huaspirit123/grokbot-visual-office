@@ -1,0 +1,413 @@
+{
+ "schemaVersion": 1,
+ "office": {
+  "name": "Demo Sky Office",
+  "updatedAt": "2026-01-15T15:00:00+08:00",
+  "demo": true
+ },
+ "projects": [
+  {
+   "id": "launch",
+   "name": "Spring launch"
+  },
+  {
+   "id": "ops",
+   "name": "Operations"
+  },
+  {
+   "id": "research",
+   "name": "Research"
+  },
+  {
+   "id": "support",
+   "name": "Customer support"
+  },
+  {
+   "id": "content",
+   "name": "Content"
+  },
+  {
+   "id": "docs",
+   "name": "Docs"
+  }
+ ],
+ "agents": [
+  {
+   "id": "nova",
+   "name": "Nova",
+   "role": "Lead agent",
+   "color": "#4f9dff",
+   "kind": "ai",
+   "isBoss": true,
+   "status": "working",
+   "currentTask": "Plan this week's launch",
+   "project": "ops",
+   "lastActive": "2026-01-15T14:55:00+08:00",
+   "tasks": [
+    {
+     "id": "n1",
+     "title": "Plan this week's launch",
+     "status": "running",
+     "project": "launch",
+     "startedAt": "2026-01-15T13:30:00+08:00",
+     "updatedAt": "2026-01-15T14:55:00+08:00",
+     "doneAt": null,
+     "progress": 0.6,
+     "note": null,
+     "subtasks": [
+      {
+       "title": "Collect team updates",
+       "status": "done"
+      },
+      {
+       "title": "Draft timeline",
+       "status": "done"
+      },
+      {
+       "title": "Review risks",
+       "status": "running"
+      }
+     ],
+     "confirms": []
+    },
+    {
+     "id": "n0",
+     "title": "Morning stand-up summary",
+     "status": "done",
+     "project": "ops",
+     "startedAt": "2026-01-15T10:00:00+08:00",
+     "updatedAt": "2026-01-15T11:00:00+08:00",
+     "doneAt": "2026-01-15T11:00:00+08:00",
+     "progress": null,
+     "note": null,
+     "subtasks": [],
+     "confirms": []
+    }
+   ]
+  },
+  {
+   "id": "pixel",
+   "name": "Pixel",
+   "role": "Designer",
+   "color": "#ff6aa2",
+   "kind": "ai",
+   "isBoss": false,
+   "status": "working",
+   "currentTask": "Landing page hero illustration",
+   "project": "launch",
+   "lastActive": "2026-01-15T14:52:00+08:00",
+   "tasks": [
+    {
+     "id": "p1",
+     "title": "Landing page hero illustration",
+     "status": "running",
+     "project": "launch",
+     "startedAt": "2026-01-15T13:00:00+08:00",
+     "updatedAt": "2026-01-15T14:52:00+08:00",
+     "doneAt": null,
+     "progress": 0.5,
+     "note": null,
+     "subtasks": [
+      {
+       "title": "Sketch",
+       "status": "done"
+      },
+      {
+       "title": "Colour pass",
+       "status": "running"
+      },
+      {
+       "title": "Export",
+       "status": "queued"
+      }
+     ],
+     "confirms": []
+    }
+   ]
+  },
+  {
+   "id": "byte",
+   "name": "Byte",
+   "role": "Engineer",
+   "color": "#34c4b8",
+   "kind": "ai",
+   "isBoss": false,
+   "status": "working",
+   "currentTask": "Checkout page bug fixes",
+   "project": "launch",
+   "lastActive": "2026-01-15T14:48:00+08:00",
+   "tasks": [
+    {
+     "id": "b1",
+     "title": "Checkout page bug fixes",
+     "status": "running",
+     "project": "launch",
+     "startedAt": "2026-01-15T13:20:00+08:00",
+     "updatedAt": "2026-01-15T14:48:00+08:00",
+     "doneAt": null,
+     "progress": 0.3,
+     "note": null,
+     "subtasks": [
+      {
+       "title": "Reproduce",
+       "status": "done"
+      },
+      {
+       "title": "Fix",
+       "status": "running"
+      },
+      {
+       "title": "Tests",
+       "status": "queued"
+      },
+      {
+       "title": "Deploy",
+       "status": "queued"
+      }
+     ],
+     "confirms": []
+    },
+    {
+     "id": "b0",
+     "title": "Upgrade dependencies",
+     "status": "done",
+     "project": "ops",
+     "startedAt": "2026-01-15T05:00:00+08:00",
+     "updatedAt": "2026-01-15T06:40:00+08:00",
+     "doneAt": "2026-01-15T06:40:00+08:00",
+     "progress": null,
+     "note": null,
+     "subtasks": [],
+     "confirms": [
+      {
+       "id": "b0-c0",
+       "question": "Keep the old version as a fallback?",
+       "status": "pending"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "echo",
+   "name": "Echo",
+   "role": "Researcher",
+   "color": "#ffb340",
+   "kind": "ai",
+   "isBoss": false,
+   "status": "stuck",
+   "currentTask": "Competitor price survey",
+   "project": "research",
+   "lastActive": "2026-01-15T14:20:00+08:00",
+   "tasks": [
+    {
+     "id": "e1",
+     "title": "Competitor price survey",
+     "status": "stuck",
+     "project": "research",
+     "startedAt": "2026-01-15T11:40:00+08:00",
+     "updatedAt": "2026-01-15T14:20:00+08:00",
+     "doneAt": null,
+     "progress": 0.4,
+     "note": "A pricing page needs a login",
+     "subtasks": [
+      {
+       "title": "List competitors",
+       "status": "done"
+      },
+      {
+       "title": "Read pricing pages",
+       "status": "stuck"
+      },
+      {
+       "title": "Summary table",
+       "status": "queued"
+      }
+     ],
+     "confirms": []
+    }
+   ]
+  },
+  {
+   "id": "mochi",
+   "name": "Mochi",
+   "role": "Support",
+   "color": "#c08bff",
+   "kind": "ai",
+   "isBoss": false,
+   "status": "waiting_approval",
+   "currentTask": "Reply to customer refund emails",
+   "project": "support",
+   "lastActive": "2026-01-15T10:00:00+08:00",
+   "tasks": [
+    {
+     "id": "m1",
+     "title": "Reply to customer refund emails",
+     "status": "running",
+     "project": "support",
+     "startedAt": "2026-01-15T06:40:00+08:00",
+     "updatedAt": "2026-01-15T10:00:00+08:00",
+     "doneAt": null,
+     "progress": 0.8,
+     "note": null,
+     "subtasks": [],
+     "confirms": [
+      {
+       "id": "m1-c0",
+       "question": "OK to refund order #1042 in full?",
+       "status": "pending"
+      },
+      {
+       "id": "m1-c1",
+       "question": "Send the apology template to 3 customers?",
+       "status": "pending"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kite",
+   "name": "Kite",
+   "role": "Writer",
+   "color": "#8fd14f",
+   "kind": "ai",
+   "isBoss": false,
+   "status": "idle",
+   "currentTask": null,
+   "project": null,
+   "lastActive": "2026-01-15T11:40:00+08:00",
+   "tasks": [
+    {
+     "id": "k1",
+     "title": "Blog post: 5 tips for remote teams",
+     "status": "done",
+     "project": "content",
+     "startedAt": "2026-01-15T00:00:00+08:00",
+     "updatedAt": "2026-01-15T03:20:00+08:00",
+     "doneAt": "2026-01-15T03:20:00+08:00",
+     "progress": null,
+     "note": null,
+     "subtasks": [],
+     "confirms": []
+    },
+    {
+     "id": "k2",
+     "title": "Newsletter draft",
+     "status": "queued",
+     "project": "content",
+     "startedAt": "2026-01-15T14:00:00+08:00",
+     "updatedAt": "2026-01-15T14:00:00+08:00",
+     "doneAt": null,
+     "progress": null,
+     "note": null,
+     "subtasks": [],
+     "confirms": []
+    }
+   ]
+  },
+  {
+   "id": "atlas",
+   "name": "Atlas",
+   "role": "Ops",
+   "color": "#7a8cff",
+   "kind": "ai",
+   "isBoss": false,
+   "status": "offline",
+   "currentTask": null,
+   "project": null,
+   "lastActive": "2026-01-12T22:00:00+08:00",
+   "tasks": [
+    {
+     "id": "a1",
+     "title": "Nightly backup check",
+     "status": "done",
+     "project": "ops",
+     "startedAt": "2026-01-12T20:20:00+08:00",
+     "updatedAt": "2026-01-12T22:00:00+08:00",
+     "doneAt": "2026-01-12T22:00:00+08:00",
+     "progress": null,
+     "note": null,
+     "subtasks": [],
+     "confirms": []
+    }
+   ]
+  },
+  {
+   "id": "lin",
+   "name": "Lin",
+   "role": "Product manager (human)",
+   "color": "#ff7a59",
+   "kind": "human",
+   "isBoss": false,
+   "status": "working",
+   "currentTask": "User interview notes",
+   "project": "docs",
+   "lastActive": "2026-01-15T14:50:00+08:00",
+   "tasks": [
+    {
+     "id": "l1",
+     "title": "User interview notes",
+     "status": "running",
+     "project": "docs",
+     "startedAt": "2026-01-15T14:10:00+08:00",
+     "updatedAt": "2026-01-15T14:50:00+08:00",
+     "doneAt": null,
+     "progress": 0.5,
+     "note": null,
+     "subtasks": [
+      {
+       "title": "Interview 1",
+       "status": "done"
+      },
+      {
+       "title": "Interview 2",
+       "status": "running"
+      }
+     ],
+     "confirms": []
+    }
+   ]
+  },
+  {
+   "id": "juno",
+   "name": "Juno",
+   "role": "QA",
+   "color": "#2ec4f1",
+   "kind": "ai",
+   "isBoss": false,
+   "status": "done",
+   "currentTask": null,
+   "project": null,
+   "lastActive": "2026-01-15T14:56:00+08:00",
+   "tasks": [
+    {
+     "id": "j1",
+     "title": "Regression test run",
+     "status": "done",
+     "project": "launch",
+     "startedAt": "2026-01-15T13:40:00+08:00",
+     "updatedAt": "2026-01-15T14:56:00+08:00",
+     "doneAt": "2026-01-15T14:56:00+08:00",
+     "progress": 1,
+     "note": null,
+     "subtasks": [],
+     "confirms": []
+    }
+   ]
+  },
+  {
+   "id": "sam",
+   "name": "Sam",
+   "role": "Designer (human)",
+   "color": "#f2c14e",
+   "kind": "human",
+   "isBoss": false,
+   "status": "idle",
+   "currentTask": null,
+   "project": null,
+   "lastActive": "2026-01-15T13:00:00+08:00",
+   "tasks": []
+  }
+ ]
+}
